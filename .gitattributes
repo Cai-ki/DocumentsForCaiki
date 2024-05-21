@@ -1,0 +1,5 @@
+# 设置所有文本文件使用 LF 作为行尾字符
+* text=auto
+
+# 设置特定文件（例如 Makefile）使用 LF 作为行尾字符
+Makefile text eol=lf
