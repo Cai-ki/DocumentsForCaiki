@@ -12,7 +12,7 @@ Disks
     4. 更改任意一个圆盘半径都会造成与该圆盘直接相切的所有圆盘半径反向改变。
     5. 对于任何一条影响链，任意一个非端点节点的变化量的绝对值等于与其相切端点的绝对值。
     6. 如果出现多个影响链相交，我们可以通过染色进行分类，节点一定和其周围节点变化相反，那么一定和其周围节点的周围与其非相切节点变化相同，并且变化量的绝对值都一样。
-    7. 我们希望两种类型的节点数量不同，这样我们可以通过让包含更多节点的类型的节点减小，从而得到让所有节点半径和减小，
+    7. 我们希望两种类型的节点数量不同，这样我们可以通过让包含更多节点的类型的节点半径减小，从而得到让所有节点半径和减小，
     8. 染色时如果发现矛盾(某节点周围颜色与其相同)则该连通块无法更改任何节点。
     9. 统计两种类型的节点的数量差，如果为0则不存在更改方法。否则存在。
 
@@ -23,15 +23,13 @@ Disks
     // #pragma GCC optimize (1)
     // #pragma GCC optimize (2)
     // #pragma GCC optimize (3)
-    #define de(a) cout << #a << '=' << a << ' '
-    #define deg(a) cout << #a << '=' << a << "\n"
     #define all(a) a.begin(), a.end()
     #define ff first
     #define ss second
-    #define PII pair<int, int>
     #define int long long
+    #define PII pair<int, int>
     using ll = long long;
-    const int N = 1e5 + 10, INF = 0x3f3f3f3f;
+    const int N = 1e5 + 10, INF = 0x3f3f3f3fll, MOD = 998244353ll;
     using namespace std;
 
     int get_dis2(PII a, PII b)
