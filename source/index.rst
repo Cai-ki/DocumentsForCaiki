@@ -12,6 +12,8 @@ Welcome to caiki's documentation!
 
    Codeforces/index
 
+   数据分析和可视化/index
+
 
 
 .. Indices and tables
