@@ -11,3 +11,5 @@ Codeforces
    Trails (Easy)
 
    Trails (Medium)
+
+   Min-Fund Prison (Easy)
