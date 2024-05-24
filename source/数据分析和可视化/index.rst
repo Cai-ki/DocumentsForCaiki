@@ -4,7 +4,6 @@
 .. toctree:: 
     :maxdepth: 1
     :caption: 目录
+    :glob:
 
-    常用图表/index
-
-    知识速查
+    *
