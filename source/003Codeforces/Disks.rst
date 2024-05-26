@@ -20,9 +20,6 @@ Disks
     :caption: 代码
 
     #include <bits/stdc++.h>
-    // #pragma GCC optimize (1)
-    // #pragma GCC optimize (2)
-    // #pragma GCC optimize (3)
     #define all(a) a.begin(), a.end()
     #define ff first
     #define ss second
@@ -54,7 +51,6 @@ Disks
         vector<vector<int>> eg(n);
 
         for (int i = 0; i < n; i++)
-        {
             for (int j = i + 1; j < n; j++)
             {
                 auto [p1, r1] = points[i];
@@ -66,7 +62,6 @@ Disks
                     eg[j].push_back(i);
                 }
             }
-        }
 
         vector<int> col(n, -1);
 
@@ -114,8 +109,6 @@ Disks
         int T = 1;
         // cin >> T, cin.get();
         while (T--)
-        {
             solve();
-        }
         return 0;
     }

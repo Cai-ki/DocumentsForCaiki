@@ -16,9 +16,6 @@ Trails (Medium)
     :caption: 代码
 
     #include <bits/stdc++.h>
-    // #pragma GCC optimize (1)
-    // #pragma GCC optimize (2)
-    // #pragma GCC optimize (3)
     #define all(a) a.begin(), a.end()
     #define ff first
     #define ss second
@@ -56,6 +53,7 @@ Trails (Medium)
 
         return tmp;
     }
+    
     void solve()
     {
         int m, n;
@@ -90,8 +88,6 @@ Trails (Medium)
         int T = 1;
         // cin >> T, cin.get();
         while (T--)
-        {
             solve();
-        }
         return 0;
     }

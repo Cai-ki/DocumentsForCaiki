@@ -19,9 +19,6 @@ Shuffling Songs
     :caption: 代码
 
     #include <bits/stdc++.h>
-    // #pragma GCC optimize (1)
-    // #pragma GCC optimize (2)
-    // #pragma GCC optimize (3)
     #define all(a) a.begin(), a.end()
     #define ff first
     #define ss second
@@ -84,8 +81,6 @@ Shuffling Songs
         int T = 1;
         cin >> T, cin.get();
         while (T--)
-        {
             solve();
-        }
         return 0;
     }
