@@ -8,8 +8,8 @@ Trails (Medium)
 
     1.首先我们继承Trails (Easy)的整体思路。
     2.我们发现n的范围很大，同时观察Trails (Easy)的更新状态过程。
-    3.可以考虑用矩阵快速幂，对于每一天的(矩阵)dp，我们都可以由(矩阵)cnt*dp(前一天)得到，化简得dp = ((cnt)^n)*dp。
-    4.这里的dp是一个二维数组，和Trails (Easy)中的不同。第一维大小为m，第二维大小为1。这是为了方便矩阵乘法。
+    3.可以考虑用矩阵快速幂，对于每一天的(矩阵)dp，我们都可以由(矩阵)dp*cnt(前一天)得到，化简得dp = dp*((cnt)^n)。
+    4.这里的dp是一个二维数组，和Trails (Easy)中的不同。第一维大小为1，第二维大小为m。这是为了方便矩阵乘法。
     5.最后求和即可。
 
 .. code-block:: cpp
@@ -25,35 +25,48 @@ Trails (Medium)
     const int N = 1e5 + 10, INF = 0x3f3f3f3fll, MOD = 1e9 + 7;
     using namespace std;
 
-    vector<vector<int>> multiply(vector<vector<int>> a, vector<vector<int>> b)
+    class Mat
     {
-        int n = a.size(), k = a[0].size(), m = b[0].size();
-        vector<vector<int>> res(n, vector<int>(m));
-        for (int i = 0; i < n; i++)
-            for (int j = 0; j < m; j++)
-                for (int l = 0; l < k; l++)
-                    res[i][j] = (res[i][j] + a[i][l] * b[l][j]) % MOD;
-        return res;
-    }
+        int rows, columns, _MOD = 1e9 + 7;
+        vector<vector<int>> matrix;
 
-    vector<vector<int>> qpow(vector<vector<int>> a, int n)
-    {
-        vector<vector<int>> tmp(a.size(), vector<int>(a[0].size(), 0));
-
-        for (int i = 0; i < a.size(); i++)
-            tmp[i][i] = 1;
-
-        while (n)
+    public:
+        Mat(int rows, int columns) : rows(rows), columns(columns) { matrix = vector<vector<int>>(rows, vector<int>(columns, 0)); }
+        Mat(vector<vector<int>> matrix) : matrix(matrix) { rows = matrix.size(), columns = matrix[0].size(); }
+        Mat get_Z() { return Mat(rows, columns); }
+        Mat get_E()
         {
-            if (n & 1)
-                tmp = multiply(tmp, a);
-            a = multiply(a, a);
-            n >>= 1;
+            Mat Z = get_Z();
+            for (int i = 0; i < rows; i++)
+                Z[i][i] = 1;
+            return Z;
         }
+        vector<int> &operator[](int index) { return matrix[index]; }
+        const vector<int> &operator[](int index) const { return matrix[index]; }
+        Mat operator*(const Mat &other)
+        {
+            int _rows = rows, _columns = other.columns;
+            Mat _matrix(_rows, _columns);
+            for (int i = 0; i < _rows; i++)
+                for (int j = 0; j < _columns; j++)
+                    for (int k = 0; k < columns; k++)
+                        _matrix[i][j] = (_matrix[i][j] + matrix[i][k] * other[k][j] % _MOD) % _MOD;
+            return _matrix;
+        }
+        Mat pow(int n)
+        {
+            Mat result = get_E(), base = *this;
+            while (n)
+            {
+                if (n & 1)
+                    result = result * base;
+                base = base * base;
+                n >>= 1;
+            }
+            return result;
+        }
+    };
 
-        return tmp;
-    }
-    
     void solve()
     {
         int m, n;
@@ -66,21 +79,16 @@ Trails (Medium)
         for (int i = 0; i < m; i++)
             cin >> l[i];
 
-        vector<vector<int>> dp(m, {0}), cnt(m, vector<int>(m));
+        Mat dp(1, m), cnt(m, m);
         dp[0][0] = 1;
 
         for (int i = 0; i < m; i++)
             for (int j = 0; j < m; j++)
                 cnt[i][j] = cnt[j][i] = (s[i] * s[j] + s[i] * l[j] + l[i] * s[j]) % MOD;
 
-        dp = multiply(qpow(cnt, n), dp);
+        dp = dp * cnt.pow(n);
 
-        int ans = 0;
-
-        for (int i = 0; i < m; i++)
-            ans = (ans + dp[i][0]) % MOD;
-
-        cout << ans << '\n';
+        cout << accumulate(all(dp[0]), 0ll) % MOD << '\n';
     }
     signed main()
     {
