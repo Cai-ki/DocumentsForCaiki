@@ -15,8 +15,6 @@ Min-Fund Prison (Easy)
 
     #include <bits/stdc++.h>
     #define all(a) a.begin(), a.end()
-    #define ff first
-    #define ss second
     #define int long long
     #define PII pair<int, int>
     using ll = long long;
