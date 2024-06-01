@@ -6,9 +6,10 @@
 
 `OI Wiki <https://oi-wiki.org/>`_
 
+目录
+*********
 .. toctree:: 
     :maxdepth: 1
-    :caption: 目录
     :glob:
 
     *
