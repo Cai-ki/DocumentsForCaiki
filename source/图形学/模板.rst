@@ -1,0 +1,113 @@
+模板
+===========
+
+向量
+**********
+
+    ::
+
+        封装了一下array，支持向量间的加减，标量乘法，向量点乘以及3维向量的叉乘，重载了`<<`。
+
+    .. code:: cpp
+
+        #include <array>
+        #include <iostream>
+        #include <iomanip>
+
+        template <typename Type, size_t N>
+        struct Vector
+        {
+            std::array<Type, N> v;
+            Vector() : v() {}
+            Vector(const std::array<Type, N> &v) : v(v) {}
+            Type &operator[](const int i) { return v[i]; }
+            const Type &operator[](const int i) const { return v[i]; }
+            Vector<Type, N> operator+(const Vector<Type, N> &other) const
+            {
+                Vector<Type, N> res;
+                for (int i = 0; i < N; i++)
+                    res[i] = v[i] + other[i];
+                return res;
+            }
+            Vector<Type, N> &operator+=(const Vector<Type, N> &other)
+            {
+                for (int i = 0; i < N; i++)
+                    v[i] += other[i];
+                return *this;
+            }
+            Vector<Type, N> operator-(const Vector<Type, N> &other) const
+            {
+                Vector<Type, N> res;
+                for (int i = 0; i < N; i++)
+                    res[i] = v[i] - other[i];
+                return res;
+            }
+            Vector<Type, N> &operator-=(const Vector<Type, N> &other)
+            {
+                for (int i = 0; i < N; i++)
+                    v[i] -= other[i];
+                return *this;
+            }
+            Type operator*(const Vector<Type, N> &other) const
+            {
+                Type res = 0;
+                for (int i = 0; i < N; i++)
+                    res += v[i] * other[i];
+                return res;
+            }
+            Vector<Type, N> operator*(const Type &scalar) const
+            {
+                Vector<Type, N> res;
+                for (int i = 0; i < N; i++)
+                    res[i] = v[i] * scalar;
+                return res;
+            }
+            Vector<Type, N> &operator*=(const Type &scalar)
+            {
+                for (int i = 0; i < N; i++)
+                    v[i] *= scalar;
+                return *this;
+            }
+            Vector<Type, 3> cross(const Vector<Type, 3> &other) const
+            {
+                static_assert(N == 3, "Cross product is only defined for 3D vectors.");
+                Vector<Type, 3> res;
+                res[0] = v[1] * other[2] - v[2] * other[1];
+                res[1] = v[2] * other[0] - v[0] * other[2];
+                res[2] = v[0] * other[1] - v[1] * other[0];
+                return res;
+            }
+            friend std::ostream &operator<<(std::ostream &os, const Vector<Type, N> &vector)
+            {
+                os << "(";
+                for (int i = 0; i < N - 1; ++i)
+                    os << vector.v[i] << ", ";
+                os << vector.v[N - 1] << ")";
+                return os;
+            }
+        };
+
+        using vec3 = Vector<int, 3>;
+
+        int main()
+        {
+            Vector<int, 3> a({1, 2, 3});
+            vec3 b({4, 5, 6});
+
+            auto c = a + b;
+            vec3 d = a - b;
+            vec3 e = a * 2.0;
+            vec3 f = a.cross(b);
+            int dot = a * b;
+
+            Vector<float, 3> g({0.1f, 0.2f, 0.3f});
+
+            std::cout << std::fixed << std::setprecision(3) << c << '\n'
+                    << d << '\n'
+                    << e << '\n'
+                    << f << '\n'
+                    << dot << '\n'
+                    << g << std::endl;
+
+            return 0;
+        }
