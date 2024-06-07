@@ -30,13 +30,6 @@ Step 1：输出PPM格式图片
 
     ::
 
-        `#pragma omp parallel for` 用于在多核 CPU 上并行执行循环体内的代码，从而加速计算密集型任务。
-        由于光线追踪每个像素的渲染都是独立的，我们可以采取并行编程来优化。
-        刚开始循环内开销并不大，反而会造成负面效果，补充代码后应该有显著提升。
-        之后会进行测试。
-
-    ::
-
         `<chrono>` 是 C++11 引入的时间库，提供了高精度的时间测量功能。
 
     ::
@@ -161,7 +154,6 @@ Step 1：输出PPM格式图片
             ofs << "P6\n"
                 << width << " " << height << "\n255\n";
 
-        #pragma omp parallel for
             for (int j = 0; j < height; j++)
             {
                 for (int i = 0; i < width; i++)
@@ -312,7 +304,6 @@ Step 2：定义基本结构体
 
             Camera camera = scenes.camera;
 
-        #pragma omp parallel for
             for (int j = 0; j < height; j++)
             {
                 for (int i = 0; i < width; i++)
@@ -369,6 +360,17 @@ Step 3：简单的光线追踪
 
     ::
 
+        `#pragma omp parallel for` 用于在多核 CPU 上并行执行循环体内的代码，从而加速计算密集型任务。
+        由于光线追踪每个像素的渲染都是独立的，我们可以采取并行编程来优化。
+        刚开始循环内开销并不大，反而会造成负面效果，补充代码后应该有显著提升。
+        之后会进行测试。
+        记得在编译时加入`-fopenmp`参数。
+        `g++ -fopenmp -O1 -O2 -O3 -std=c++20`
+        由于渲染像素我们是并行运行的，每个像素渲染完成后的先后顺序不可控，我们会把对应位置的RGB存下来，之后一起顺序写入。
+        为了更便于理解代码结构，我更改了部分代码。新增了`write`函数，之后会放入我们的`template.hpp`中。
+
+    ::
+
         更改代码的最重要的部分是求解摄像机对各个像素打出的射线的方向。
     
     :: 
@@ -378,14 +380,35 @@ Step 3：简单的光线追踪
         但是我们知道光路是可逆的，如果我们找到摄像机对于画布上的每个像素点的方向向量，我们自然也知道这个条具体的光线的方向向量。
         现在我们可以反其道而行之，从摄像机对画布上的每个像素打一条射线，根据这条射线我们就可以追踪真正的光线的物理行为，这就叫做`光线追踪`。
         我们甚至可以模拟光线反射和折射等行为，当然此时我们打过来的这条射线原本所代表的光路就是对应的反射光线或折射光线。
+        刚开始我们并不会考虑反射，折射以及漫反射，也就是说我们只进行最简单的一步，就是从摄像机对物体打出一条射线，并直接求出颜色。
+        因此这一步其实应该叫做ray_casting即`射线投射`。这是光线追踪的第一步。
         
+    ::
+
         前面我们提到了摄像机，画布，光源。
-        接下来我们会给出其具体关系图。
+        接下来我们会给出其具体关系图。    
 
     .. image:: ../_static/图形学/初识光线追踪/光线追踪图示.png
         :alt: 光线追踪图示
         :align: center
 
+    ::
+
+        现在可以解释如何求解摄像机对各个像素打出的射线方向了。
+        为了简化计算和更容易理解，统一世界坐标系为右手坐标系，摄像机固定在原点，视角朝向默认向z轴负半轴方向，摄像机到画布距离固定为1。
+        接下来我们的任务就是计算打向某个像素点，该像素点在画布的坐标。
+        `float x = (2. * (i + 0.5) / (float)width - 1) * tan(camera.fov / 2.);`
+        `(i + 0.5)`算出该像素的中心点，
+        `(i + 0.5) / (float)width`求得该像素横坐标占总宽度百分比，
+        `2. * (i + 0.5) / (float)width * tan(camera.fov / 2.)`算出在世界度量尺度下该像素在画布上的横坐标。
+        `- tan(camera.fov / 2.)`减去半个画布宽是为了我们让画布的正中心正对摄像机。
+        综上我们得到了某个像素的世界坐标系下的横坐标，同样过程求纵坐标即可。
+        值得注意的是，fov代表着视线的水平观察角度，所以对于求得的纵坐标还需要`* (float)height / (float)width`处理。
+        纵向的渲染顺序是按照纵坐标递减顺序渲染，和横向相反，所以纵坐标求解需要加上负号上下翻转图像。
+
+    ::
+
+        至此，我们已经实现了光线追踪的第一步`Ray Casting`。
 
     .. code:: cpp
 
@@ -426,6 +449,7 @@ Step 3：简单的光线追踪
         #include <chrono>
         #include <limits>
         #include <cmath>
+        #include <omp.h>
 
         #include "template.hpp"
 
@@ -447,19 +471,11 @@ Step 3：简单的光线追踪
             return color;
         }
 
-        void render(Scenes &scenes, std::string filename, int width, int height, std::string filepath = "./")
+        std::vector<std::vector<RGB>> render(Scenes &scenes, int width, int height)
         {
-            std::ofstream ofs(filepath + filename + ".ppm", std::ios::binary);
-            if (!ofs)
-            {
-                std::cerr << "Error opening file for writing!" << std::endl;
-                return;
-            }
-
-            ofs << "P6\n"
-                << width << " " << height << "\n255\n";
-
             Camera camera = scenes.camera;
+
+            std::vector<std::vector<RGB>> image(height, std::vector<RGB>(width));
 
         #pragma omp parallel for
             for (size_t j = 0; j < height; ++j)
@@ -479,6 +495,33 @@ Step 3：简单的光线追踪
 
                     float max = std::max(rgb[0], std::max(rgb[1], rgb[2]));
                     rgb /= max;
+
+                    image[j][i] = rgb;
+                }
+            }
+
+            return image;
+        }
+
+        void write(const std::vector<std::vector<RGB>> &image, const std::string &filename, const std::string &filepath = "./")
+        {
+            int width = image[0].size(), height = image.size();
+
+            std::ofstream ofs(filepath + filename + ".ppm", std::ios::binary);
+            if (!ofs)
+            {
+                std::cerr << "Error opening file for writing!" << std::endl;
+                return;
+            }
+
+            ofs << "P6\n"
+                << width << " " << height << "\n255\n";
+
+            for (size_t j = 0; j < height; ++j)
+            {
+                for (size_t i = 0; i < width; ++i)
+                {
+                    RGB rgb = image[j][i];
 
                     char r = static_cast<char>(rgb[0] * 255);
                     char g = static_cast<char>(rgb[1] * 255);
@@ -506,7 +549,8 @@ Step 3：简单的光线追踪
             scenes.spheres = spheres;
             scenes.camera = camera;
 
-            render(scenes, "image", width, height, "./");
+            auto image = render(scenes, width, height);
+            write(image, "image", "./");
 
             auto end = std::chrono::high_resolution_clock::now();
             std::chrono::duration<double> duration = end - start;
@@ -516,4 +560,338 @@ Step 3：简单的光线追踪
 
     .. image:: ../_static/图形学/初识光线追踪/简单的光线追踪.png
         :alt: 简单的光线追踪
+        :align: center
+
+Step 4：添加环境光
+*********************
+
+    ::
+
+        这次我更改了不少的代码，并且发现了之前代码的一个小错误。
+        ```
+        float max = std::max(rgb[0], std::max(rgb[1], rgb[2]));
+        if (max > 1)
+            rgb /= max;
+        ```
+        这部分代码我添加了`if (max > 1)`，因为我不想让RGB未超过255的颜色强制除以max。
+        我让rgb除max的原因仅仅是当max大于1时，意味着其比255还要亮，显然这在自然界中是不存在的，毕竟我们设定255是三原色的最大亮度。
+        因此当max大于1时，可以认为这个是最大的255，需要rgb除max。
+
+    ::
+
+        好了，该到了讨论环境光的部分了。在往前的代码中我并没有设置光源，所以可以简单认为摄像机投射的视线本身就是光线，并且射线直接打在物体上，强度没有损耗，显现出物体本色。
+        而在后续代码中，我设置了光源，毕竟我们不能从摄像机发光了，这只是一种取巧的做法，现实世界人眼可不会发光^_^。
+        那么问题来了，光线追踪到物体上和物体产生交点，怎么得到这个点的颜色呢？
+        事实上，我们会计算该点的照明度乘上它的本色RGB，交点的照明度应该和交点的法线与交点和光源方向向量的夹角有关。
+        夹角越小自然照明度越好，那么问题其实很好解决，只需要求出法线以及交点和光源转化为单位向量后的点积就可以近似得到亮度。
+        当然，我们还会乘上一些系数，这是为了尽量拟合真实世界而设置的。翻译一下英文，自行理解语义即可。
+        对于多个光源，把它们贡献加一块就可以了，不用在意RGB会大于1，我们前面已经解决过了，也不用在意是否现实世界就是这样运算的，我们是尽可能按照现实世界的物理法则，但对于一些复杂部分，简化一下，拟合拟合就行，毕竟现实世界真的很复杂。
+
+    ::
+
+        由于更改代码较多，涉及到`template.hpp`，我将展示所有代码。
+
+    .. code:: cpp
+
+        constexpr float MAX_FLOAT = std::numeric_limits<float>::max();
+        const float PI = 4. * std::atan(1.0);
+
+        template <typename Type, size_t N>
+        struct Vector
+        {
+            std::array<Type, N> v;
+            Vector() : v() {}
+            Vector(const std::array<Type, N> &v) : v(v) {}
+            Type &operator[](const int i) { return v[i]; }
+            const Type &operator[](const int i) const { return v[i]; }
+            Vector<Type, N> operator+(const Vector<Type, N> &other) const
+            {
+                Vector<Type, N> res;
+                for (int i = 0; i < N; i++)
+                    res[i] = v[i] + other[i];
+                return res;
+            }
+            Vector<Type, N> &operator+=(const Vector<Type, N> &other)
+            {
+                for (int i = 0; i < N; i++)
+                    v[i] += other[i];
+                return *this;
+            }
+            Vector<Type, N> operator-(const Vector<Type, N> &other) const
+            {
+                Vector<Type, N> res;
+                for (int i = 0; i < N; i++)
+                    res[i] = v[i] - other[i];
+                return res;
+            }
+            Vector<Type, N> &operator-=(const Vector<Type, N> &other)
+            {
+                for (int i = 0; i < N; i++)
+                    v[i] -= other[i];
+                return *this;
+            }
+            Type operator*(const Vector<Type, N> &other) const
+            {
+                Type res = 0;
+                for (int i = 0; i < N; i++)
+                    res += v[i] * other[i];
+                return res;
+            }
+            Vector<Type, N> operator*(const Type &scalar) const
+            {
+                Vector<Type, N> res;
+                for (int i = 0; i < N; i++)
+                    res[i] = v[i] * scalar;
+                return res;
+            }
+            Vector<Type, N> &operator*=(const Type &scalar)
+            {
+                for (int i = 0; i < N; i++)
+                    v[i] *= scalar;
+                return *this;
+            }
+            Vector<Type, N> operator/(const Type &scalar) const
+            {
+                Vector<Type, N> res;
+                for (int i = 0; i < N; i++)
+                    res[i] = v[i] / scalar;
+                return res;
+            }
+            Vector<Type, N> &operator/=(const Type &scalar)
+            {
+                for (int i = 0; i < N; i++)
+                    v[i] /= scalar;
+                return *this;
+            }
+            Vector<Type, 3> cross(const Vector<Type, 3> &other) const
+            {
+                static_assert(N == 3, "Cross product is only defined for 3D vectors.");
+                Vector<Type, 3> res;
+                res[0] = v[1] * other[2] - v[2] * other[1];
+                res[1] = v[2] * other[0] - v[0] * other[2];
+                res[2] = v[0] * other[1] - v[1] * other[0];
+                return res;
+            }
+            Type magnitude() const
+            {
+                Type res = 0;
+                for (int i = 0; i < N; i++)
+                    res += v[i] * v[i];
+                return std::sqrt(res);
+            }
+            Vector<Type, N> normalized() const { return (*this) * (1.f / magnitude()); }
+            friend std::ostream &operator<<(std::ostream &os, const Vector<Type, N> &vector)
+            {
+                os << "(";
+                for (int i = 0; i < N - 1; ++i)
+                    os << vector.v[i] << ", ";
+                os << vector.v[N - 1] << ")";
+                return os;
+            }
+        };
+
+        using v3f = Vector<float, 3>;
+        using Point = v3f;
+        using Dir = v3f;
+        using RGB = v3f;
+
+        struct Ray
+        {
+            Point origin;
+            Dir direction;
+            RGB color;
+            float t;
+        };
+
+        struct Flat
+        {
+            std::vector<Point> points;
+            Dir N;
+        };
+
+        struct Sphere
+        {
+            Point center;
+            float radius;
+            bool ray_intersect(Ray &ray) const
+            {
+                v3f L = center - ray.origin;
+                float tca = L * ray.direction;
+                float d2 = L * L - tca * tca;
+                if (d2 > radius * radius)
+                    return false;
+                float thc = sqrtf(radius * radius - d2);
+                float t = ray.t;
+                ray.t = tca - thc;
+                float t1 = tca + thc;
+                if (ray.t < 0)
+                    ray.t = t1;
+                if (ray.t < 0)
+                {
+                    ray.t = t;
+                    return false;
+                }
+                return true;
+            }
+        };
+
+        struct Light
+        {
+            Point position;
+            float intensity;
+        };
+
+        struct Camera
+        {
+            Point position;
+            Dir direction;
+            float dis, fov;
+        };
+
+        struct Scenes
+        {
+            std::vector<Flat> flats;
+            std::vector<Sphere> spheres;
+            std::vector<Light> lights;
+            Camera camera;
+        };
+
+        void write(const std::vector<std::vector<RGB>> &image, const std::string &filename, const std::string &filepath = "./")
+        {
+            int width = image[0].size(), height = image.size();
+
+            std::ofstream ofs(filepath + filename + ".ppm", std::ios::binary);
+            if (!ofs)
+            {
+                std::cerr << "Error opening file for writing!" << std::endl;
+                return;
+            }
+
+            ofs << "P6\n"
+                << width << " " << height << "\n255\n";
+
+            for (size_t j = 0; j < height; ++j)
+            {
+                for (size_t i = 0; i < width; ++i)
+                {
+                    RGB rgb = image[j][i];
+
+                    char r = static_cast<char>(rgb[0] * 255);
+                    char g = static_cast<char>(rgb[1] * 255);
+                    char b = static_cast<char>(rgb[2] * 255);
+
+                    ofs.write(&r, 1);
+                    ofs.write(&g, 1);
+                    ofs.write(&b, 1);
+                }
+            }
+        }
+
+        RGB ray_tracing(Ray &ray, const Scenes &scenes, int depth);
+        std::vector<std::vector<RGB>> render(Scenes &scenes, int width, int height)
+        {
+            Camera camera = scenes.camera;
+
+            std::vector<std::vector<RGB>> image(height, std::vector<RGB>(width));
+
+        #pragma omp parallel for
+            for (size_t j = 0; j < height; ++j)
+            {
+                for (size_t i = 0; i < width; ++i)
+                {
+                    float x = (2. * (i + 0.5) / (float)width - 1) * tan(camera.fov / 2.);
+                    float y = -(2. * (j + 0.5) / (float)height - 1) * tan(camera.fov / 2.) * (float)height / (float)width;
+                    Dir dir = v3f({x, y, -1}).normalized();
+
+                    Ray ray({camera.position,
+                            dir,
+                            RGB({0., 1., 1.}),
+                            MAX_FLOAT});
+
+                    RGB rgb = ray_tracing(ray, scenes, 0);
+
+                    float max = std::max(rgb[0], std::max(rgb[1], rgb[2]));
+                    if (max > 1)
+                        rgb /= max;
+
+                    image[j][i] = rgb;
+                }
+            }
+
+            return image;
+        }        
+
+    .. code:: cpp
+
+        #include <fstream>
+        #include <array>
+        #include <vector>
+        #include <string>
+        #include <iostream>
+        #include <iomanip>
+        #include <chrono>
+        #include <limits>
+        #include <cmath>
+        #include <omp.h>
+
+        #include "template.hpp"
+
+        RGB ray_tracing(Ray &ray, const Scenes &scenes, int depth)
+        {
+            bool intersect = false;
+
+            RGB color({1., 1., 0.});
+            Dir N;
+            Point hit_point;
+
+            for (auto &sphere : scenes.spheres)
+            {
+                if (sphere.ray_intersect(ray))
+                {
+                    intersect = true;
+                    hit_point = ray.origin + ray.direction.normalized() * ray.t;
+                    N = (hit_point - sphere.center).normalized();
+                }
+            }
+
+            float diffuse_light_intensity = 0.;
+            for (auto light : scenes.lights)
+            {
+                Dir light_dir = (light.position - hit_point).normalized();
+                diffuse_light_intensity += light.intensity * std::max(0.f, light_dir * N);
+            }
+
+            return intersect ? color * diffuse_light_intensity : RGB({0., 1., 1.});
+        }
+
+        int main()
+        {
+            auto start = std::chrono::high_resolution_clock::now();
+
+            int width = 640, height = 480;
+
+            std::vector<Sphere> spheres;
+            spheres.push_back(Sphere({Point({0., 0., -5.}), 2.}));
+
+            std::vector<Light> lights;
+            lights.push_back(Light({Point({0., 0., 0.}), 1.}));
+
+            Camera camera({Point({0., 0., 0.}), Dir({0., 0., 1.}), 1., static_cast<float>(105. / 180 * PI)});
+
+            Scenes scenes;
+            scenes.spheres = spheres;
+            scenes.lights = lights;
+            scenes.camera = camera;
+
+            auto image = render(scenes, width, height);
+            write(image, "image", "./");
+
+            auto end = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<double> duration = end - start;
+            std::cout << "Time taken: " << duration.count() << " seconds" << std::endl;
+            return 0;
+        }
+
+    .. image:: ../_static/图形学/初识光线追踪/添加环境光.png
+        :alt: 添加环境光
         :align: center
