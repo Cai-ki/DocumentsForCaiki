@@ -31,6 +31,13 @@
                     v[i] += other[i];
                 return *this;
             }
+            Vector<Type, N> operator-() const
+            {
+                Vector<Type, N> res;
+                for (int i = 0; i < N; i++)
+                    res[i] = -v[i];
+                return res;
+            }            
             Vector<Type, N> operator-(const Vector<Type, N> &other) const
             {
                 Vector<Type, N> res;
