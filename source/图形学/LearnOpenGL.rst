@@ -31,7 +31,7 @@ Hello Triangle
     ::
 
         说实话，有点上强度了，不过读好几遍代码终于搞懂了。
-        着色器链接部分比葫芦画瓢就行。
+        编译着色器和链接部分比葫芦画瓢就行。
         VAO，VBO，EBO，的理解就十分重要了。
         教程本来就是翻译的刚开始有点看不懂，复制一些代码让GPT解释了一下才勉强理解了它们的概念。
         简单来讲，你每一次让GPU绘制的任务都应该由VAO，VBO，EBO组合，当然EBO可以不需要。
@@ -53,3 +53,52 @@ Hello Triangle
     #. `作业1代码链接 <../_static/图形学/LearnOpenGL/HelloTriangle_homework1.html>`_     
     #. `作业2代码链接 <../_static/图形学/LearnOpenGL/HelloTriangle_homework2.html>`_
     #. `作业3代码链接 <../_static/图形学/LearnOpenGL/HelloTriangle_homework3.html>`_
+
+Shaders
+****************
+
+    ::
+
+        这一节难度较低，开始教了一部分`GLSL`的用法，接下来展示了如何让程序调用函数来与着色器交互。
+        之后就更简单了，封装一个着色器类便于使用，毕竟着色器编译链接部分很板。
+
+    `代码链接 <../_static/图形学/LearnOpenGL/Shaders1.html>`_
+
+    .. image:: ../_static/图形学/LearnOpenGL/Shaders1.png
+        :alt: Shaders1
+        :align: center
+
+    `代码链接 <../_static/图形学/LearnOpenGL/Shaders2.html>`_
+
+    .. image:: ../_static/图形学/LearnOpenGL/Shaders2.png
+        :alt: Shaders2
+        :align: center
+
+    `代码链接 <../_static/图形学/LearnOpenGL/Shaders3.html>`_
+    `代码链接 <../_static/图形学/LearnOpenGL/Shaders4.html>`_
+
+    .. image:: ../_static/图形学/LearnOpenGL/Shaders34.png
+        :alt: Shaders34
+        :align: center
+
+    #. `作业1代码链接 <../_static/图形学/LearnOpenGL/Shaders_homework1.html>`_     
+    #. `作业2代码链接 <../_static/图形学/LearnOpenGL/Shaders_homework2.html>`_
+    #. `作业3代码链接 <../_static/图形学/LearnOpenGL/Shaders_homework3.html>`_
+
+Textures
+***************
+
+    ::
+
+        代码实际运行效果不是下方图片哦。
+        我自己改了一部分代码，教程的图片好难看(⊙﹏⊙)，还是我的流萤好看。
+
+    `代码链接 <../_static/图形学/LearnOpenGL/Textures1.html>`_
+    
+    `代码链接 <../_static/图形学/LearnOpenGL/Textures2.html>`_
+
+    .. image:: ../_static/图形学/LearnOpenGL/Textures_流萤.png
+        :alt: Textures_流萤
+        :align: center
+    
+    `原画链接 <../_static/图形学/LearnOpenGL/流萤.jpg>`_
