@@ -94,7 +94,7 @@ Textures
         我自己改了一部分代码，教程的图片好难看(⊙﹏⊙)，还是我的流萤好看。
 
     `代码链接 <../_static/图形学/LearnOpenGL/Textures1.html>`_
-    
+
     `代码链接 <../_static/图形学/LearnOpenGL/Textures2.html>`_
 
     .. image:: ../_static/图形学/LearnOpenGL/Textures_流萤.png
@@ -102,3 +102,80 @@ Textures
         :align: center
     
     `原画链接 <../_static/图形学/LearnOpenGL/流萤.jpg>`_
+
+    #. `作业1代码链接 <../_static/图形学/LearnOpenGL/Textures_homework1.html>`_     
+    #. `作业2代码链接 <../_static/图形学/LearnOpenGL/Textures_homework2.html>`_
+    #. `作业3代码链接 <../_static/图形学/LearnOpenGL/Textures_homework3.html>`_
+    #. `作业4代码链接 <../_static/图形学/LearnOpenGL/Textures_homework3.html>`_
+
+Transformations
+**************************
+
+    ::
+
+        这一节讲了不少线性代数的知识。
+        有一说一，我不是很喜欢，但没办法还得学。
+        作业我没怎么看，之后用到再翻找吧。。。
+
+    `代码链接 <../_static/图形学/LearnOpenGL/Transformations.html>`_
+
+    .. image:: ../_static/图形学/LearnOpenGL/Transformations.png
+        :alt: Transformations
+        :align: center
+
+    #. `作业1代码链接 <../_static/图形学/LearnOpenGL/Transformations_homework1.html>`_     
+    #. `作业2代码链接 <../_static/图形学/LearnOpenGL/Transformations_homework2.html>`_
+
+Coordinate Systems
+**************************
+
+    ::
+
+        这一个个系数矩阵有点迷糊呀，当然我是指具体实现方面。
+        它们各自的功能还是很好理解的。
+
+    .. math::
+
+        V_{clip} = M_{projection} \cdot M_{view} \cdot M_{model} \cdot V_{local}
+
+
+    `代码链接 <../_static/图形学/LearnOpenGL/CoordinateSystems1.html>`_
+
+    .. image:: ../_static/图形学/LearnOpenGL/CoordinateSystems1.png
+        :alt: Coordinate Systems1
+        :align: center
+
+    `代码链接 <../_static/图形学/LearnOpenGL/CoordinateSystems2.html>`_
+
+    .. image:: ../_static/图形学/LearnOpenGL/CoordinateSystems2.png
+        :alt: Coordinate Systems2
+        :align: center
+
+    `代码链接 <../_static/图形学/LearnOpenGL/CoordinateSystems3.html>`_
+
+    .. image:: ../_static/图形学/LearnOpenGL/CoordinateSystems3.png
+        :alt: Coordinate Systems3
+        :align: center
+
+    #. `作业1代码链接 <../_static/图形学/LearnOpenGL/CoordinateSystems_homework.html>`_ 
+
+Camera
+*****************
+
+    ::
+
+        逻辑不难理解，所以代码直接跳到最后一部分了。
+
+    `代码链接 <../_static/图形学/LearnOpenGL/Camera.html>`_
+
+    `Camera类 <../_static/图形学/LearnOpenGL/Camera_class.html>`_
+    
+    `新代码链接 <../_static/图形学/LearnOpenGL/Camera_useclass.html>`_
+    
+    #. `作业1代码链接 <../_static/图形学/LearnOpenGL/Camera_homework1.html>`_     
+    #. `作业2代码链接 <../_static/图形学/LearnOpenGL/Camera_homework2.html>`_
+
+Review
+***************************
+
+    `教程链接 <https://learnopengl-cn.github.io/01%20Getting%20started/10%20Review/>`_  
