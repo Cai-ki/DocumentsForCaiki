@@ -70,3 +70,58 @@
     .. image:: ../_static/图灵完备/基础逻辑电路/或门（OR）.png
         :alt: 或门（OR）
         :align: center
+
+高电平
+***************
+
+    .. image:: ../_static/图灵完备/基础逻辑电路/高电平.png
+        :alt: 高电平
+        :align: center
+
+第二刻
+***************
+
+    ::
+
+        使用与门让其满足条件。
+
+    .. image:: ../_static/图灵完备/基础逻辑电路/第二刻.png
+        :alt: 第二刻
+        :align: center
+
+异或门（XOR）
+********************
+
+    ::
+
+        使用或门判断是否有真，使用与非门判断是否全真。
+        与门整合结果即可。
+
+    .. image:: ../_static/图灵完备/基础逻辑电路/异或门（XOR）.png
+        :alt: 异或门（XOR）
+        :align: center
+
+三路或门
+==========
+
+    .. image:: ../_static/图灵完备/基础逻辑电路/三路或门.png
+        :alt: 三路或门
+        :align: center
+
+三路与门
+==========
+
+    .. image:: ../_static/图灵完备/基础逻辑电路/三路与门.png
+        :alt: 三路与门
+        :align: center
+
+同或门（XNOR）
+=================
+
+    ::
+
+        异或门取反即可。
+
+    .. image:: ../_static/图灵完备/基础逻辑电路/同或门（XNOR）.png
+        :alt: 同或门（XNOR）
+        :align: center
