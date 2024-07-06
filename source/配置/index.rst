@@ -2,7 +2,7 @@
 =================================
 .. toctree::
    :maxdepth: 1
-   :caption: 题目
+   :caption: 目录
    :glob:
    
    *
