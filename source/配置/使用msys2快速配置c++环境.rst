@@ -23,7 +23,7 @@
     #. 根据个人需求将相应的编译器的bin目录加入环境变量中
     
         .. code-block::
-            :caption: 默认路径
+            :caption: msys2默认路径
 
             "C:\msys64"
 

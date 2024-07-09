@@ -51,7 +51,7 @@ c/c++
         "code-runner.runInTerminal": true, // 在terminal中运行
         "code-runner.executorMap": {
             "c": "cd $dir && gcc $fileName -o ../bin/$fileNameWithoutExt && ../bin/$dir$fileNameWithoutExt",
-            "cpp": "cd $dir && g++ -std=c++20 $fileName -o bin/$fileNameWithoutExt && bin/$fileNameWithoutExt",
+            "cpp": "cd $dir && g++ -std=c++20 $fileName -o ../bin/$fileNameWithoutExt && ../bin/$fileNameWithoutExt",
             // "cpp": "cd $dir && g++ -std=c++20 $fileName -o ../bin/$fileNameWithoutExt && Get-Content '../io/in.txt' | ../bin/$fileNameWithoutExt | Out-File -FilePath '../io/out.txt' -Encoding utf8",
             "python": "cd $dir && set PYTHONIOENCODING=utf8 ;python -u $fullFileName",
         }, // 用于指定如何运行不同语言的代码
