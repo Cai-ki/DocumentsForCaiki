@@ -19,10 +19,9 @@ help:
 %: Makefile
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-push:
+commit:
 	git add .
 	git commit -m 'push writings'
-	git push
 
 show:
 	sphinx-autobuild source build/html
