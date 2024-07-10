@@ -4,7 +4,6 @@ Welcome to caiki's documentation!
    .. toctree::
       :maxdepth: 1
       :glob:
-      :hidden:
 
       ./*/index
 

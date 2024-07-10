@@ -9,7 +9,7 @@
 project = "Document for Caiki"
 copyright = '2024, caiki'
 author = 'caiki'
-release = 'v0.1'
+release = 'v0.2'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
