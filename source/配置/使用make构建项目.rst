@@ -4,119 +4,119 @@
 make
 ************
 
-#. `source <https://gnuwin32.sourceforge.net/packages/make.htm>`_
-#. 将bin目录添加到环境变量里。
+    #. `source <https://gnuwin32.sourceforge.net/packages/make.htm>`_
+    #. 将bin目录添加到环境变量里。
 
 Makefile
 ***********
 
-.. code-block:: cpp
-    :caption: main.cpp
+    .. code-block:: cpp
+        :caption: main.cpp
 
-    #include <stdio.h>
+        #include <stdio.h>
 
-    int main() {
-        printf("this is code main.cpp\n");
-        return 0;
-    }
+        int main() {
+            printf("this is code main.cpp\n");
+            return 0;
+        }
 
-.. code-block:: makefile
-    :caption: Makefile
+    .. code-block:: makefile
+        :caption: Makefile
 
-    all:
+        all:
+            g++ main.cpp -o main
+            main
+
+        clean:
+            del main.exe
+
+    .. code-block:: bash
+        :caption: bash
+
+        $ make
         g++ main.cpp -o main
         main
-
-    clean:
+        this is code main.cpp
+        $ make clean
         del main.exe
 
-.. code-block:: bash
-    :caption: bash
+    使用make来编译运行你的代码。以上是最最基础的部分。
 
-    $ make
-    g++ main.cpp -o main
-    main
-    this is code main.cpp
-    $ make clean
-    del main.exe
+    接下来我们编译包含多个源文件的 C++ 程序。
 
-使用make来编译运行你的代码。以上是最最基础的部分。
+    .. code-block:: cpp
+        :caption: main.cpp
 
-接下来我们编译包含多个源文件的 C++ 程序。
+        #include <stdio.h>
 
-.. code-block:: cpp
-    :caption: main.cpp
+        #include "function.h"
 
-    #include <stdio.h>
+        int main() {
+            printf("this is code main.cpp\n");
+            call();
+            return 0;
+        }
 
-    #include "function.h"
+    .. code-block:: cpp
+        :caption: function.h
 
-    int main() {
-        printf("this is code main.cpp\n");
-        call();
-        return 0;
-    }
+        #include <stdio.h>
+        void call();
 
-.. code-block:: cpp
-    :caption: function.h
+    .. code-block:: cpp
+        :caption: function.cpp
 
-    #include <stdio.h>
-    void call();
+        #include "function.h"
+        void call() { printf("the function is called"); }
 
-.. code-block:: cpp
-    :caption: function.cpp
+    .. code-block:: makefile
+        :caption: Makefile
 
-    #include "function.h"
-    void call() { printf("the function is called"); }
+        CODES = main.cpp function.cpp
+        EXE = main
 
-.. code-block:: makefile
-    :caption: Makefile
+        all: compile
+            ${EXE}
+            
+        compile:
+            g++ ${CODES} -o ${EXE}
 
-    CODES = main.cpp function.cpp
-    EXE = main
+        clean:
+            del ${EXE}.exe
 
-    all: compile
-        ${EXE}
-        
-    compile:
-        g++ ${CODES} -o ${EXE}
+    .. code-block:: bash
+        :caption: bash
 
-    clean:
-        del ${EXE}.exe
+        $ make
+        g++ main.cpp function.cpp -o main
+        main
+        this is code main.cpp
+        the function is called
+        $ make clean
+        del main.exe
 
-.. code-block:: bash
-    :caption: bash
+    让我们解释一下上面的Makefile内容。
 
-    $ make
-    g++ main.cpp function.cpp -o main
-    main
-    this is code main.cpp
-    the function is called
-    $ make clean
-    del main.exe
+    我们可以自定义变量，这个可以类比成c/c++的宏（我个人是这么理解的），
+    调用时只需要按 `${变量名}` 的格式，就可以替换内容。
 
-让我们解释一下上面的Makefile内容。
+    后面的部分都是以
 
-我们可以自定义变量，这个可以类比成c/c++的宏（我个人是这么理解的），
-调用时只需要按 `${变量名}` 的格式，就可以替换内容。
+    ::
 
-后面的部分都是以
+        target：need ...
+            command
+            
+            ...
 
-::
+    的格式书写。
 
-    target：need ...
-        command
-        
-        ...
+    其实很好理解，你需要执行某个指令，需要一些前置条件，就比如我上面的运行代码需要先编译出可执行文件。
 
-的格式书写。
+    这里的need其实是另一个target罢了。
 
-其实很好理解，你需要执行某个指令，需要一些前置条件，就比如我上面的运行代码需要先编译出可执行文件。
+    command就是正常的指令而已啦。
 
-这里的need其实是另一个target罢了。
+    很显然make的执行是一个递归调用的过程。
 
-command就是正常的指令而已啦。
-
-很显然make的执行是一个递归调用的过程。
-
-其默认执行第一个target，也就是说如果你不指定make target，仅仅make的话就只会执行第一个target。
+    其默认执行第一个target，也就是说如果你不指定make target，仅仅make的话就只会执行第一个target。

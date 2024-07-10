@@ -1,88 +1,88 @@
 圣诞树
 ======
 
-`题目链接 <https://codeforces.com/gym/105176/problem/N>`_
+    `题目链接 <https://codeforces.com/gym/105176/problem/N>`_
 
-.. code-block:: text
-    :caption: 思路
+    .. code-block:: text
+        :caption: 思路
 
-    1.我们可以任选一个点为根节点，进行dfs。
-    2.dfs返回的是当前子树的不同color数，我们可以用set去重。
-    3.当子树满足size(set) >= k时，我们就把它裁掉，答案加1。
-    4.若不满足则启发式合并到我们的set里，最后返回给父节点。
-    5.最后判断根节点返回的set的大小即可。
-    6.这样贪心能够尽快的裁掉满足条件的部分，为后面腾出更多的color让后面有更对可能会凑齐。
-    7.这是一种感性上分析，但具体证明目前本人无能为力。
+        1.我们可以任选一个点为根节点，进行dfs。
+        2.dfs返回的是当前子树的不同color数，我们可以用set去重。
+        3.当子树满足size(set) >= k时，我们就把它裁掉，答案加1。
+        4.若不满足则启发式合并到我们的set里，最后返回给父节点。
+        5.最后判断根节点返回的set的大小即可。
+        6.这样贪心能够尽快的裁掉满足条件的部分，为后面腾出更多的color让后面有更对可能会凑齐。
+        7.这是一种感性上分析，但具体证明目前本人无能为力。
 
-.. code-block:: cpp
-    :caption: 代码
+    .. code-block:: cpp
+        :caption: 代码
 
-    #include <bits/stdc++.h>
-    #define all(a) a.begin(), a.end()
-    #define int long long
-    #define PII pair<int, int>
-    using ll = long long;
-    const int N = 1e5 + 10, INF = 1e18, MOD = 1e9 + 7;
-    using namespace std;
+        #include <bits/stdc++.h>
+        #define all(a) a.begin(), a.end()
+        #define int long long
+        #define PII pair<int, int>
+        using ll = long long;
+        const int N = 1e5 + 10, INF = 1e18, MOD = 1e9 + 7;
+        using namespace std;
 
-    void solve()
-    {
-        int n, k;
-        cin >> n >> k;
-        vector<int> col(n);
-
-        for (int i = 0; i < n; i++)
-            cin >> col[i];
-
-        vector<vector<int>> eg(n);
-
-        for (int i = 0; i < n - 1; i++)
+        void solve()
         {
-            int u, v;
-            cin >> u >> v;
-            --u, --v;
-            eg[u].push_back(v);
-            eg[v].push_back(u);
-        }
+            int n, k;
+            cin >> n >> k;
+            vector<int> col(n);
 
-        int ans = 0;
+            for (int i = 0; i < n; i++)
+                cin >> col[i];
 
-        auto dfs = [&](auto &&dfs, int u, int fa) -> set<int>
-        {
-            set<int> s = {col[u]};
+            vector<vector<int>> eg(n);
 
-            for (auto v : eg[u])
+            for (int i = 0; i < n - 1; i++)
             {
-                if (v == fa)
-                    continue;
-
-                auto it = dfs(dfs, v, u);
-
-                if (it.size() >= k)
-                    ans++;
-                else
-                {
-                    if (s.size() < it.size())
-                        swap(s, it);
-
-                    for (auto x : it)
-                        s.insert(x);
-                }
+                int u, v;
+                cin >> u >> v;
+                --u, --v;
+                eg[u].push_back(v);
+                eg[v].push_back(u);
             }
 
-            return s;
-        };
+            int ans = 0;
 
-        auto it = dfs(dfs, 0, -1);
+            auto dfs = [&](auto &&dfs, int u, int fa) -> set<int>
+            {
+                set<int> s = {col[u]};
 
-        cout << ans + (it.size() >= k) << "\n";
-    }
-    signed main()
-    {
-        ios::sync_with_stdio(0), cin.tie(0);
-        int T = 1;
-        // cin >> T, cin.get();
-        while (T--)
-            solve();
-        return 0;
-    }
+                for (auto v : eg[u])
+                {
+                    if (v == fa)
+                        continue;
+
+                    auto it = dfs(dfs, v, u);
+
+                    if (it.size() >= k)
+                        ans++;
+                    else
+                    {
+                        if (s.size() < it.size())
+                            swap(s, it);
+
+                        for (auto x : it)
+                            s.insert(x);
+                    }
+                }
+
+                return s;
+            };
+
+            auto it = dfs(dfs, 0, -1);
+
+            cout << ans + (it.size() >= k) << "\n";
+        }
+        signed main()
+        {
+            ios::sync_with_stdio(0), cin.tie(0);
+            int T = 1;
+            // cin >> T, cin.get();
+            while (T--)
+                solve();
+            return 0;
+        }

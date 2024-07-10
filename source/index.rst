@@ -1,11 +1,12 @@
 Welcome to caiki's documentation!
 =================================
-.. toctree::
-   :maxdepth: 1
-   :caption: 目录
-   :glob:
 
-   ./*/index
+   .. toctree::
+      :maxdepth: 1
+      :glob:
+      :hidden:
+
+      ./*/index
 
 
 
