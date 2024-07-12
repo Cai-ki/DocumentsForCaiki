@@ -6,7 +6,7 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "Document for Caiki"
+project = "Documents for Caiki"
 copyright = '2024, caiki'
 author = 'caiki'
 release = 'v0.2'
