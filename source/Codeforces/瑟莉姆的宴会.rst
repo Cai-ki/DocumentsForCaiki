@@ -1,16 +1,11 @@
-瑟莉姆的宴会
-=============
+`瑟莉姆的宴会 <https://codeforces.com/gym/105176/problem/D>`_
+=================================================================
 
-    `题目链接 <https://codeforces.com/gym/105176/problem/D>`_
-
-    .. code-block:: text
-        :caption: 思路
-
-        1.思路很简单，先按下标顺序连成一个链，若正序不满足那倒序必定满足。
-        2.最后输出即可。
+    思路很简单，先按下标顺序连成一个链，若正序不满足那倒序必定满足。
+    
+    最后输出即可。
 
     .. code-block:: cpp
-        :caption: 代码
 
         #include <bits/stdc++.h>
         #define all(a) a.begin(), a.end()

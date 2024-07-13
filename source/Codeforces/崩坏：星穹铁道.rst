@@ -1,130 +1,128 @@
-崩坏：星穹铁道
-==============
+`崩坏：星穹铁道 <https://codeforces.com/gym/105176/problem/K>`_
+====================================================================
 
-`题目链接 <https://codeforces.com/gym/105176/problem/K>`_
+    非常经典的矩阵快速幂。
+    
+    注意角色是按顺序轮流行动的，我们先构造出每个角色类型的系数矩阵。
+    
+    然后算出一个整轮的系数矩阵，之后进行矩阵快速幂即可，不足一轮的单独乘上。
+    
+    最后左乘一个初始矩阵，求sum就能得到答案。
+    
+    细节方面具体看代码。。。
 
-.. code-block:: text
-    :caption: 思路
+    .. code-block:: cpp
+        
+        #include <bits/stdc++.h>
+        #define all(a) a.begin(), a.end()
+        #define int long long
+        #define PII pair<int, int>
+        using ll = long long;
+        const int N = 1e5 + 10, INF = 1e18, MOD = 998244353;
+        using namespace std;
 
-    1.非常经典的矩阵快速幂。
-    2.注意角色是按顺序轮流行动的，我们先构造出每个角色类型的系数矩阵。
-    3.然后算出一个整轮的系数矩阵，之后进行矩阵快速幂即可，不足一轮的单独乘上。
-    4.最后左乘一个初始矩阵，求sum就能得到答案。
-    5.细节方面具体看代码。。。
-
-.. code-block:: cpp
-    :caption: 代码
-
-    #include <bits/stdc++.h>
-    #define all(a) a.begin(), a.end()
-    #define int long long
-    #define PII pair<int, int>
-    using ll = long long;
-    const int N = 1e5 + 10, INF = 1e18, MOD = 998244353;
-    using namespace std;
-
-    class Mat
-    {
-        int rows, columns, _MOD = 998244353;
-        vector<vector<int>> matrix;
-
-    public:
-        Mat(int rows, int columns) : rows(rows), columns(columns) { matrix = vector<vector<int>>(rows, vector<int>(columns, 0)); }
-        Mat(vector<vector<int>> matrix) : matrix(matrix) { rows = matrix.size(), columns = matrix[0].size(); }
-        Mat get_Z() { return Mat(rows, columns); }
-        Mat get_E()
+        class Mat
         {
-            Mat Z = get_Z();
-            for (int i = 0; i < rows; i++)
-                Z[i][i] = 1;
-            return Z;
-        }
-        vector<int> &operator[](int index) { return matrix[index]; }
-        const vector<int> &operator[](int index) const { return matrix[index]; }
-        Mat operator*(const Mat &other)
-        {
-            int _rows = rows, _columns = other.columns;
-            Mat _matrix(_rows, _columns);
-            for (int i = 0; i < _rows; i++)
-                for (int j = 0; j < _columns; j++)
-                    for (int k = 0; k < columns; k++)
-                        _matrix[i][j] = (_matrix[i][j] + matrix[i][k] * other[k][j] % _MOD) % _MOD;
-            return _matrix;
-        }
-        Mat pow(int n)
-        {
-            Mat result = get_E(), base = *this;
-            while (n)
+            int rows, columns, _MOD = 998244353;
+            vector<vector<int>> matrix;
+
+        public:
+            Mat(int rows, int columns) : rows(rows), columns(columns) { matrix = vector<vector<int>>(rows, vector<int>(columns, 0)); }
+            Mat(vector<vector<int>> matrix) : matrix(matrix) { rows = matrix.size(), columns = matrix[0].size(); }
+            Mat get_Z() { return Mat(rows, columns); }
+            Mat get_E()
             {
-                if (n & 1)
-                    result = result * base;
-                base = base * base;
-                n >>= 1;
+                Mat Z = get_Z();
+                for (int i = 0; i < rows; i++)
+                    Z[i][i] = 1;
+                return Z;
             }
-            return result;
+            vector<int> &operator[](int index) { return matrix[index]; }
+            const vector<int> &operator[](int index) const { return matrix[index]; }
+            Mat operator*(const Mat &other)
+            {
+                int _rows = rows, _columns = other.columns;
+                Mat _matrix(_rows, _columns);
+                for (int i = 0; i < _rows; i++)
+                    for (int j = 0; j < _columns; j++)
+                        for (int k = 0; k < columns; k++)
+                            _matrix[i][j] = (_matrix[i][j] + matrix[i][k] * other[k][j] % _MOD) % _MOD;
+                return _matrix;
+            }
+            Mat pow(int n)
+            {
+                Mat result = get_E(), base = *this;
+                while (n)
+                {
+                    if (n & 1)
+                        result = result * base;
+                    base = base * base;
+                    n >>= 1;
+                }
+                return result;
+            }
+        };
+
+        void solve()
+        {
+            int n, k;
+            cin >> n >> k;
+            vector<int> a(4);
+
+            for (auto &it : a)
+                cin >> it;
+
+            vector<vector<int>>
+                type[3] = {
+                    {
+                        {0, 1, 0, 0, 0, 0},
+                        {0, 0, 1, 0, 0, 0},
+                        {0, 0, 0, 1, 0, 0},
+                        {0, 0, 0, 0, 1, 0},
+                        {0, 0, 0, 0, 0, 1},
+                        {0, 0, 0, 0, 0, 1},
+                    },
+                    {
+                        {0, 1, 0, 0, 0, 0},
+                        {1, 0, 0, 0, 0, 0},
+                        {0, 1, 0, 0, 0, 0},
+                        {0, 0, 1, 0, 0, 0},
+                        {0, 0, 0, 1, 0, 0},
+                        {0, 0, 0, 0, 1, 0},
+                    },
+                    {
+                        {0, 1, 0, 0, 0, 0},
+                        {1, 0, 1, 0, 0, 0},
+                        {0, 1, 0, 1, 0, 0},
+                        {0, 0, 1, 0, 1, 0},
+                        {0, 0, 0, 1, 0, 1},
+                        {0, 0, 0, 0, 1, 1},
+                    },
+                };
+
+            Mat K(6, 6);
+            K = K.get_E();
+
+            for (auto it : a)
+                K = K * Mat(type[it - 1]);
+
+            K = K.pow(n / 4);
+
+            for (int i = 0; i < n % 4; i++)
+                K = K * Mat(type[a[i] - 1]);
+
+            Mat A(6, 6);
+            A[0][k] = 1;
+            A = A * K;
+
+            cout << accumulate(all(A[0]), 0ll) % MOD;
         }
-    };
-
-    void solve()
-    {
-        int n, k;
-        cin >> n >> k;
-        vector<int> a(4);
-
-        for (auto &it : a)
-            cin >> it;
-
-        vector<vector<int>>
-            type[3] = {
-                {
-                    {0, 1, 0, 0, 0, 0},
-                    {0, 0, 1, 0, 0, 0},
-                    {0, 0, 0, 1, 0, 0},
-                    {0, 0, 0, 0, 1, 0},
-                    {0, 0, 0, 0, 0, 1},
-                    {0, 0, 0, 0, 0, 1},
-                },
-                {
-                    {0, 1, 0, 0, 0, 0},
-                    {1, 0, 0, 0, 0, 0},
-                    {0, 1, 0, 0, 0, 0},
-                    {0, 0, 1, 0, 0, 0},
-                    {0, 0, 0, 1, 0, 0},
-                    {0, 0, 0, 0, 1, 0},
-                },
-                {
-                    {0, 1, 0, 0, 0, 0},
-                    {1, 0, 1, 0, 0, 0},
-                    {0, 1, 0, 1, 0, 0},
-                    {0, 0, 1, 0, 1, 0},
-                    {0, 0, 0, 1, 0, 1},
-                    {0, 0, 0, 0, 1, 1},
-                },
-            };
-
-        Mat K(6, 6);
-        K = K.get_E();
-
-        for (auto it : a)
-            K = K * Mat(type[it - 1]);
-
-        K = K.pow(n / 4);
-
-        for (int i = 0; i < n % 4; i++)
-            K = K * Mat(type[a[i] - 1]);
-
-        Mat A(6, 6);
-        A[0][k] = 1;
-        A = A * K;
-
-        cout << accumulate(all(A[0]), 0ll) % MOD;
-    }
-    signed main()
-    {
-        ios::sync_with_stdio(0), cin.tie(0);
-        int T = 1;
-        // cin >> T, cin.get();
-        while (T--)
-            solve();
-        return 0;
-    }
+        signed main()
+        {
+            ios::sync_with_stdio(0), cin.tie(0);
+            int T = 1;
+            // cin >> T, cin.get();
+            while (T--)
+                solve();
+            return 0;
+        }

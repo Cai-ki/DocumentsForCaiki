@@ -1,137 +1,134 @@
-命令行
-=============
+`命令行 <https://codeforces.com/gym/105176/problem/I>`_
+============================================================
 
-`题目链接 <https://codeforces.com/gym/105176/problem/I>`_
+    思路其实很简单，就是单纯的使用trie树，并动态维护一个节点指针。
+    
+    无论是插入，删除还是Tab，本质上都是指针的移动罢了。
+    
+    不过实现上会需要维护很多信息，除了trie所必须的外，我们还需要以下一些信息。
+    
+    - p：节点指针，
+    - len：缓冲区长度，
+    - exist：节点的命令id，
+    - on：节点途径命令个数，
+    - from：以长度为key记录所有指针跳转的历史(主要是为了服务于非法节点指针的还原)，
+    - road：记录每个节点的父节点，
+    - jump：记录以当前节点开始并且节点途径命令个数不变能到达的节点并且统计距离(这是为了让我们的Tab操作的时间复杂度为常数级别)。
 
-.. code-block:: text
-    :caption: 思路
+    具体细节看下方代码，为了压行可读性有些许弱，个人陋习请见谅。
 
-    1.思路其实很简单，就是单纯的使用trie树，并动态维护一个节点指针。
-    2.无论是插入，删除还是Tab，本质上都是指针的移动罢了。
-    3.不过实现上会需要维护很多信息，除了trie所必须的外，我们还需要以下一些信息。
-    4.
-        p：节点指针，
-        len：缓冲区长度，
-        exist：节点的命令id，
-        on：节点途径命令个数，
-        from：以长度为key记录所有指针跳转的历史(主要是为了服务于非法节点指针的还原)，
-        road：记录每个节点的父节点，
-        jump：记录以当前节点开始并且节点途径命令个数不变能到达的节点并且统计距离(这是为了让我们的Tab操作的时间复杂度为常数级别)。
-    5.具体细节看下方代码，为了压行可读性有些许弱，个人陋习请见谅。
+    .. code-block:: cpp
 
-.. code-block:: cpp
-    :caption: 代码
+        #include <bits/stdc++.h>
+        #define all(a) a.begin(), a.end()
+        #define int long long
+        #define PII pair<int, int>
+        using ll = long long;
+        const int N = 1e5 + 10, INF = 1e18, MOD = 1e9 + 7;
+        using namespace std;
 
-    #include <bits/stdc++.h>
-    #define all(a) a.begin(), a.end()
-    #define int long long
-    #define PII pair<int, int>
-    using ll = long long;
-    const int N = 1e5 + 10, INF = 1e18, MOD = 1e9 + 7;
-    using namespace std;
-
-    class Trie
-    {
-        int cnt, p, len;
-        vector<int> exist, on, from, road;
-        vector<PII> jump;
-        vector<vector<int>> next;
-
-    public:
-        Trie(int size) : next(size, vector<int>(26, 0)), exist(size, 0), on(size, 0), from(size, 0), road(size, 0), jump(size, {0, 0}), cnt(0), p(0), len(0) {}
-        void insert(string &s, int id)
+        class Trie
         {
-            int pos = 0;
-            for (auto c : s)
-            {
-                int i = c - 'a';
-                if (!next[pos][i])
-                    next[pos][i] = ++cnt;
-                pos = next[pos][i];
-                on[pos]++;
-            }
-            on[0]++, exist[pos] = id;
-        }
+            int cnt, p, len;
+            vector<int> exist, on, from, road;
+            vector<PII> jump;
+            vector<vector<int>> next;
 
-        PII init(int u)
-        {
-            for (int i = 0; i < 26; i++)
+        public:
+            Trie(int size) : next(size, vector<int>(26, 0)), exist(size, 0), on(size, 0), from(size, 0), road(size, 0), jump(size, {0, 0}), cnt(0), p(0), len(0) {}
+            void insert(string &s, int id)
             {
-                int next_pos = next[u][i];
-                if (next_pos)
+                int pos = 0;
+                for (auto c : s)
                 {
-                    road[next_pos] = u;
-                    auto [jp, jlen] = init(next_pos);
-                    if (on[u] == on[next_pos])
+                    int i = c - 'a';
+                    if (!next[pos][i])
+                        next[pos][i] = ++cnt;
+                    pos = next[pos][i];
+                    on[pos]++;
+                }
+                on[0]++, exist[pos] = id;
+            }
+
+            PII init(int u)
+            {
+                for (int i = 0; i < 26; i++)
+                {
+                    int next_pos = next[u][i];
+                    if (next_pos)
                     {
                         road[next_pos] = u;
-                        return jump[u] = {jp, jlen + 1};
+                        auto [jp, jlen] = init(next_pos);
+                        if (on[u] == on[next_pos])
+                        {
+                            road[next_pos] = u;
+                            return jump[u] = {jp, jlen + 1};
+                        }
                     }
                 }
+                return jump[u] = {u, 0};
             }
-            return jump[u] = {u, 0};
-        }
 
-        void front(char c) { from[++len] = (p = len && !p ? 0 : next[p][c - 'a']); }
+            void front(char c) { from[++len] = (p = len && !p ? 0 : next[p][c - 'a']); }
 
-        void back() { len = max(--len, 0ll), p = len && !p ? from[len] : road[p]; }
+            void back() { len = max(--len, 0ll), p = len && !p ? from[len] : road[p]; }
 
-        int query() { return ((p && exist[p]) ? exist[p] : -1) | (p = len = 0); }
+            int query() { return ((p && exist[p]) ? exist[p] : -1) | (p = len = 0); }
 
-        void find()
-        {
-            int all = 0, alone = 0, init_pos = 0;
-            for (int i = 0; i < 26; i++)
+            void find()
             {
-                int next_pos = next[p][i];
-                if (next_pos)
-                    all = max(all, on[next_pos]), alone += (on[next_pos] > 0), init_pos = next_pos;
+                int all = 0, alone = 0, init_pos = 0;
+                for (int i = 0; i < 26; i++)
+                {
+                    int next_pos = next[p][i];
+                    if (next_pos)
+                        all = max(all, on[next_pos]), alone += (on[next_pos] > 0), init_pos = next_pos;
+                }
+                if ((!p && len) || (alone != 1))
+                    return;
+                from[++len] = (p = init_pos);
+                auto jp = jump[p];
+                from[len += jp.second] = (p = jp.first);
             }
-            if ((!p && len) || (alone != 1))
-                return;
-            from[++len] = (p = init_pos);
-            auto jp = jump[p];
-            from[len += jp.second] = (p = jp.first);
-        }
-    };
-    void solve()
-    {
-        int n, m;
-        cin >> n >> m;
-
-        Trie trie(2e6);
-
-        for (int i = 1; i <= n; i++)
+        };
+        void solve()
         {
+            int n, m;
+            cin >> n >> m;
+
+            Trie trie(2e6);
+
+            for (int i = 1; i <= n; i++)
+            {
+                string s;
+                cin >> s;
+                trie.insert(s, i);
+            }
+
+            trie.init(0);
+
             string s;
             cin >> s;
-            trie.insert(s, i);
+
+            for (auto c : s)
+            {
+                if (c >= 'a' && c <= 'z')
+                    trie.front(c);
+                else if (c == 'B')
+                    trie.back();
+                else if (c == 'T')
+                    trie.find();
+                else
+                    cout << trie.query() << ' ';
+            }
         }
 
-        trie.init(0);
-
-        string s;
-        cin >> s;
-
-        for (auto c : s)
+        signed main()
         {
-            if (c >= 'a' && c <= 'z')
-                trie.front(c);
-            else if (c == 'B')
-                trie.back();
-            else if (c == 'T')
-                trie.find();
-            else
-                cout << trie.query() << ' ';
+            ios::sync_with_stdio(0), cin.tie(0);
+            int T = 1;
+            // cin >> T, cin.get();
+            while (T--)
+                solve();
+            return 0;
         }
-    }
-
-    signed main()
-    {
-        ios::sync_with_stdio(0), cin.tie(0);
-        int T = 1;
-        // cin >> T, cin.get();
-        while (T--)
-            solve();
-        return 0;
-    }
