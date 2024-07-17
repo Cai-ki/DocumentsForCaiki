@@ -1,17 +1,13 @@
-Min-Fund Prison (Easy)
-=======================
-
-    `题目链接 <https://codeforces.com/contest/1970/problem/G1>`_
-
-    .. code-block:: text
-        :caption: 思路
-
-        1.根据题目范围可以发现，这是一棵树，分析可得加边操作无意义。
-        2.对于任意一条边都可以把它作为桥将节点分为两个集合。
-        3.我们只需要dfs一遍动态更新最小值即可，注意数据范围，INF要足够大。
+`Min-Fund Prison (Easy) <https://codeforces.com/contest/1970/problem/G1>`_
+================================================================================
+    
+    根据题目范围可以发现，这是一棵树，分析可得加边操作无意义。
+    
+    对于任意一条边都可以把它作为桥将节点分为两个集合。
+    
+    我们只需要dfs一遍动态更新最小值即可，注意数据范围，INF要足够大。
 
     .. code-block:: cpp
-        :caption: 代码
 
         #include <bits/stdc++.h>
         #define all(a) a.begin(), a.end()

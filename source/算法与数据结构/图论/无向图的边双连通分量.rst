@@ -1,0 +1,125 @@
+.. index:: 无向图的边双连通分量
+
+`无向图的边双连通分量 <https://www.luogu.com.cn/problem/P8436>`_
+================================================================
+
+    在一张连通的无向图中，对于两个点 ``u`` 和 ``v`` ，如果无论删去哪条边（只能删去一条）都不能使它们不连通，我们就说 ``u`` 和 ``v`` 边双连通。
+
+    边双连通具有传递性，即，若 ``x`` , ``y`` 边双连通， ``y`` , ``z`` 边双连通，则 ``x`` , ``z`` 边双连通。
+
+    划分双连通分量的关键在于寻找分量之间的衔接点，在边双连通分量中就是寻找 ``桥`` 。
+
+    在无向图中，寻找 ``桥`` 其实很简单，若一个点通过某一条边后找不到路径（不包括反向边）返回原点，这条边就是 ``桥``。
+
+    具体实现建议使用 ``tarjan`` 算法，以下是我对该算法的部分理解。
+
+    ``tarjan`` 算法需要维护一些信息：
+
+    - ``dfn[]`` ， ``low[]`` ， ``timestamp`` ，通过维护遍历的 ``dfn`` 序，记录每个点访问的时间戳，配合上 ``low[]`` 就可以得到该点接着往下遍历能达到的最小的时间戳。显然如果得到的时间戳比访问该点的时间戳更靠前，那么该点所经过的这条边必不可能是 ``桥``。
+    
+    - ``stk[]`` ， ``top`` ，使用栈来存储同一个边双连通分量的点。
+    
+    - ``bcc_cnt`` ， ``id[]`` ，维护边双连通分量的个数和各个点所属的边双连通分量。
+   
+    - ``is_brage[]`` ，判断边是否为 ``桥`` 。
+  
+    算法的核心部分：
+
+    .. code-block:: CPP
+
+        if (!dfn[v]) {
+            tarjan(v, i);
+            low[u] = min(low[u], low[v]);
+            if (dfn[u] < low[v]) is_brage[i] = is_brage[i ^ 1] = true;
+        } else if (i != (f ^ 1))
+            low[u] = min(low[u], low[v]);
+
+    ``!dfn[v]`` 和 ``i != (f ^ 1)`` 分支必须有 ``low[u] = min(low[u], low[v]);`` 这里不多做解释。
+
+    关键在于下面两点：
+
+    - ``if (dfn[u] < low[v]) is_brage[i] = is_brage[i ^ 1] = true;`` ``dfn[u] < low[v]`` 代表着经过这条边绕不回原点，可以判断该边为桥（任意无向边都由两条相反方向的有向边表示，由于边的id从0开始，若一条边的id等于另一条边id异或1，那么它们就是代表同一条无向边）。
+
+    - ``i != (f ^ 1)`` 只有回去的边不是来时的边的反向边，才能更新能到达的最小时间戳。当然这个分支也代表着不会接着往下遍历了。
+
+    具体代码：
+
+    .. code-block:: CPP
+
+        #include <cstring>
+        #include <iostream>
+        #include <vector>
+
+        using namespace std;
+
+        const int N = 5e5 + 1, M = 4e6;
+
+        int n, m;
+
+        int idx, e[M], ne[M], h[N];
+
+        void add(int u, int v) { e[idx] = v, ne[idx] = h[u], h[u] = idx++; }
+
+        int dfn[N], low[N], timestamp;
+        int stk[N], top;
+        int bcc_cnt, id[N];
+        bool is_brage[M];
+
+        void tarjan(int u, int f) {
+            dfn[u] = low[u] = ++timestamp;
+            stk[++top] = u;
+
+            for (int i = h[u]; i != -1; i = ne[i]) {
+                int v = e[i];
+                if (!dfn[v]) {
+                    tarjan(v, i);
+                    low[u] = min(low[u], low[v]);
+                    if (dfn[u] < low[v]) is_brage[i] = is_brage[i ^ 1] = true;
+                } else if (i != (f ^ 1))
+                    low[u] = min(low[u], low[v]);
+            }
+
+            if (dfn[u] == low[u]) {
+                ++bcc_cnt;
+                int t;
+                do {
+                    t = stk[top--];
+                    id[t] = bcc_cnt;
+                } while (t != u);
+            }
+        }
+
+        int main() {
+            memset(h, -1, sizeof(h));
+
+            cin >> n >> m;
+
+            while (m--) {
+                int u, v;
+                cin >> u >> v;
+                add(u, v);
+                add(v, u);
+            }
+
+            for (int i = 1; i <= n; i++) {
+                if (!dfn[i]) tarjan(i, -1);
+            }
+
+            cout << bcc_cnt << '\n';
+
+            vector<vector<int>> p(bcc_cnt + 1);
+
+            for (int i = 1; i <= n; i++) {
+                p[id[i]].push_back(i);
+            }
+
+            for (int i = 1; i <= bcc_cnt; i++) {
+                cout << p[i].size();
+                for (int j = 0; j < p[i].size(); j++) {
+                    cout << ' ' << p[i][j];
+                }
+                cout << '\n';
+            }
+
+            return 0;
+        }

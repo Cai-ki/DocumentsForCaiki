@@ -1,19 +1,17 @@
-Trails (Medium)
-==================
+`Trails (Medium) <https://codeforces.com/problemset/problem/1970/E2>`_
+=========================================================================
 
-    `题目链接 <https://codeforces.com/problemset/problem/1970/E2>`_
-
-    .. code-block:: text
-        :caption: 思路
-
-        1.首先我们继承Trails (Easy)的整体思路。
-        2.我们发现n的范围很大，同时观察Trails (Easy)的更新状态过程。
-        3.可以考虑用矩阵快速幂，对于每一天的(矩阵)dp，我们都可以由(矩阵)dp*cnt(前一天)得到，化简得dp = dp*((cnt)^n)。
-        4.这里的dp是一个二维数组，和Trails (Easy)中的不同。第一维大小为1，第二维大小为m。这是为了方便矩阵乘法。
-        5.最后求和即可。
+    首先我们继承Trails (Easy)的整体思路。
+    
+    我们发现n的范围很大，同时观察Trails (Easy)的更新状态过程。
+    
+    可以考虑用矩阵快速幂，对于每一天的(矩阵)dp，我们都可以由(矩阵)dp*cnt(前一天)得到，化简得dp = dp*((cnt)^n)。
+    
+    这里的dp是一个二维数组，和Trails (Easy)中的不同。第一维大小为1，第二维大小为m。这是为了方便矩阵乘法。
+    
+    最后求和即可。
 
     .. code-block:: cpp
-        :caption: 代码
 
         #include <bits/stdc++.h>
         #define all(a) a.begin(), a.end()

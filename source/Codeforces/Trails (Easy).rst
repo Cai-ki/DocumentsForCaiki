@@ -1,21 +1,23 @@
-Trails (Easy)
-==================
+`Trails (Easy) <https://codeforces.com/problemset/problem/1970/E1>`_
+==========================================================================
 
-    `题目链接 <https://codeforces.com/problemset/problem/1970/E1>`_
+    很显然是一道动态规划题，我们考虑dp解决，时间复杂度O(n*m*m)可过。
+    
+    设计dp状态，dp[i]，这一天以i为终点的方案数。
+    
+    初始化dp[0] = 1，其他都为0，预处理出任意两个房屋直接路径的条数。
+    
+    进行状态转移，每一天我们都需要枚举出发点和结束点。
+    
+    .. code-block:: cpp
 
-    .. code-block:: text
-        :caption: 思路
-
-        1.很显然是一道动态规划题，我们考虑dp解决，时间复杂度O(n*m*m)可过。
-        2.设计dp状态，dp[i]，这一天以i为终点的方案数。
-        3.初始化dp[0] = 1，其他都为0，预处理出任意两个房屋直接路径的条数。
-        4.进行状态转移，每一天我们都需要枚举出发点和结束点。
-            next[j] = (next[j] + dp[i] * cnt[i][j] % MOD) % MOD;
-        5.由于压缩了一维，每一次记得更新dp数组。             
-        6.最后求和即可获得全部方案数。
+        next[j] = (next[j] + dp[i] * cnt[i][j] % MOD) % MOD;
+    
+    由于压缩了一维，每一次记得更新dp数组。             
+    
+    最后求和即可获得全部方案数。
 
     .. code-block:: cpp
-        :caption: 代码
 
         #include <bits/stdc++.h>
         #define all(a) a.begin(), a.end()
