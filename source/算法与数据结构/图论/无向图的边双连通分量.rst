@@ -19,7 +19,7 @@
     
     - ``stk[]`` ， ``top`` ，使用栈来存储同一个边双连通分量的点。
     
-    - ``bcc_cnt`` ， ``id[]`` ，维护边双连通分量的个数和各个点所属的边双连通分量。
+    - ``bcc_cnt`` ， ``vector<int> bcc[]`` ，维护边双连通分量的个数和边双连通分量的点集。
    
     - ``is_brage[]`` ，判断边是否为 ``桥`` 。
   
@@ -62,7 +62,8 @@
 
         int dfn[N], low[N], timestamp;
         int stk[N], top;
-        int bcc_cnt, id[N];
+        int bcc_cnt;
+        vector<int> bcc[N];
         bool is_brage[M];
 
         void tarjan(int u, int f) {
@@ -84,7 +85,7 @@
                 int t;
                 do {
                     t = stk[top--];
-                    id[t] = bcc_cnt;
+                    bcc[bcc_cnt].push_back(t);
                 } while (t != u);
             }
         }
@@ -107,16 +108,10 @@
 
             cout << bcc_cnt << '\n';
 
-            vector<vector<int>> p(bcc_cnt + 1);
-
-            for (int i = 1; i <= n; i++) {
-                p[id[i]].push_back(i);
-            }
-
             for (int i = 1; i <= bcc_cnt; i++) {
-                cout << p[i].size();
-                for (int j = 0; j < p[i].size(); j++) {
-                    cout << ' ' << p[i][j];
+                cout << bcc[i].size();
+                for (int j = 0; j < bcc[i].size(); j++) {
+                    cout << ' ' << bcc[i][j];
                 }
                 cout << '\n';
             }

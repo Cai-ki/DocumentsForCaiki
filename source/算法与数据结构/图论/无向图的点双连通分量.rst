@@ -1,0 +1,165 @@
+.. index:: 无向图的点双连通分量
+
+`无向图的点双连通分量 <https://www.luogu.com.cn/problem/P8435>`_
+================================================================
+
+    在一张连通的无向图中，对于两个点 ``u`` 和 ``v``，如果无论删去哪个点（只能删去一个，且不能删 ``u`` 和 ``v`` 自己）都不能使它们不连通，我们就说 ``u`` 和 ``v`` 点双连通。
+    
+    点双连通不具有传递性，反例如下图， ``A`` , ``B`` 点双连通， ``B`` , ``C`` 点双连通，而 ``A`` , ``C`` 不点双连通。
+    
+    .. image:: ../../_static/算法与数据结构/图论/点双连通分量.svg
+        :alt: An example SVG image
+        :align: center
+
+    划分双连通分量的关键在于寻找分量之间的衔接点，在点双连通分量中就是寻找 ``割点`` 。
+
+    在无向图中，寻找 ``割点`` 不难理解，若一个点通过某一条边后找不到路径（不包括该点）接触比该点更靠前的点，这个点就是 ``割点``。由 ``割点`` 定义可知，删除掉该点后，这条边所连接的子树就无法和祖先节点连通，该点自然是 ``割点``。
+
+    具体实现建议使用 ``tarjan`` 算法，以下是我对该算法的部分理解。
+
+    ``tarjan`` 算法需要维护一些信息：
+
+    - ``dfn[]`` ， ``low[]`` ， ``timestamp`` ，通过维护遍历的 ``dfn`` 序，记录每个点访问的时间戳，配合上 ``low[]`` 就可以得到该点接着往下遍历能达到的最小的时间戳。
+    
+    - ``stk[]`` ， ``top`` ，使用栈来存储同一个点双连通分量的点。
+    
+    - ``bcc_cnt`` ， ``vector<int> bcc[]`` ，维护边双连通分量的个数和点双连通分量的点集。
+   
+    - ``is_cut[]`` ，判断点是否为 ``割点`` 。
+  
+    算法的核心部分：
+
+    .. code-block:: CPP
+
+        if (!dfn[v]) {
+            tarjan(v, u);
+            low[u] = min(low[u], low[v]);
+            if (dfn[u] <= low[v]) {
+                is_cut[u] = true;
+                ++bcc_cnt;
+                int t;
+                do {
+                    t = stk[top--];
+                    bcc[bcc_cnt].push_back(t);
+                } while (t != v);
+                bcc[bcc_cnt].push_back(u);
+            }
+            ++son;
+        } else if (v != f) {
+            low[u] = min(low[u], low[v]);
+        }
+
+    ``!dfn[v]`` 和 ``v != f`` 分支必须有 ``low[u] = min(low[u], low[v]);`` 这里不多做解释。
+
+    关键在于下面两点：
+
+    - ``dfn[u] <= low[v]`` 意味着以 ``v`` 为根节点的子树只能通过 ``u`` 点与祖先节点连通。那么 ``u`` 自然是割点。 ``bcc[bcc_cnt].push_back(u)`` 割点本身也能成为点连通分量的一部分。
+
+    - ``v != f`` 这个分支是判断 ``u`` 的子树是否能访问祖先节点。``v`` 显然不能是 ``u`` 的直系父节点。
+
+    特殊情况：
+
+    .. code-block:: CPP
+
+        if (f == -1 && son < 2) {
+            is_cut[u] = false;
+        }
+
+        if (f == -1 && son == 0) {
+            bcc[++bcc_cnt].push_back(u);
+        }
+
+    对于某个连通块的根节点必须特殊对待。
+
+    如果其子树小于 ``2`` 意味着是孤立点或者叶子节点，那么先前的判断 ``割点`` 就是错误的。
+
+    如果它是孤立点还需要单独放入一个点连通分量中。
+
+    具体代码：
+
+    .. code-block:: CPP
+
+        #include <cstring>
+        #include <iostream>
+        #include <vector>
+
+        using namespace std;
+
+        const int N = 5e5 + 1, M = 4e6;
+
+        int n, m;
+
+        int idx, e[M], ne[M], h[N];
+
+        void add(int u, int v) { e[idx] = v, ne[idx] = h[u], h[u] = idx++; }
+
+        int dfn[N], low[N], timestamp;
+        int stk[N], top;
+        int bcc_cnt;
+        vector<int> bcc[N];
+        bool is_cut[N];
+
+        void tarjan(int u, int f) {
+            dfn[u] = low[u] = ++timestamp;
+            stk[++top] = u;
+
+            int son = 0;
+
+            for (int i = h[u]; i != -1; i = ne[i]) {
+                int v = e[i];
+                if (!dfn[v]) {
+                    tarjan(v, u);
+                    low[u] = min(low[u], low[v]);
+                    if (dfn[u] <= low[v]) {
+                        is_cut[u] = true;
+                        ++bcc_cnt;
+                        int t;
+                        do {
+                            t = stk[top--];
+                            bcc[bcc_cnt].push_back(t);
+                        } while (t != v);
+                        bcc[bcc_cnt].push_back(u);
+                    }
+                    ++son;
+                } else if (v != f) {
+                    low[u] = min(low[u], low[v]);
+                }
+            }
+
+            if (f == -1 && son < 2) {
+                is_cut[u] = false;
+            }
+
+            if (f == -1 && son == 0) {
+                bcc[++bcc_cnt].push_back(u);
+            }
+        }
+
+        int main() {
+            memset(h, -1, sizeof(h));
+
+            cin >> n >> m;
+
+            while (m--) {
+                int u, v;
+                cin >> u >> v;
+                add(u, v);
+                add(v, u);
+            }
+
+            for (int i = 1; i <= n; i++) {
+                if (!dfn[i]) tarjan(i, -1);
+            }
+
+            cout << bcc_cnt << '\n';
+
+            for (int i = 1; i <= bcc_cnt; i++) {
+                cout << bcc[i].size();
+                for (int j = 0; j < bcc[i].size(); j++) {
+                    cout << ' ' << bcc[i][j];
+                }
+                cout << '\n';
+            }
+
+            return 0;
+        }
