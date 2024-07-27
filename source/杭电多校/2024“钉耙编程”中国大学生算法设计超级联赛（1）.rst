@@ -1,0 +1,362 @@
+.. index:: 2024“钉耙编程”中国大学生算法设计超级联赛（1）
+
+2024“钉耙编程”中国大学生算法设计超级联赛（1）
+=============================================
+
+`循环位移 <https://acm.hdu.edu.cn/showproblem.php?pid=7433>`_
+******************************************************************
+
+    由于查询的子串长度固定，所以可以用哈希线性跑，带上 ``set`` 也就只是多了个 ``log`` 。
+
+    .. code-block:: CPP
+
+        #include <bits/stdc++.h>
+
+        using i64 = long long;
+
+        template <int seed, int mod, class T = std::string>
+        struct Hash {
+            std::vector<i64> h, p;
+            Hash(T a) {
+                int n = a.size();
+                h.assign(n + 1, 0);
+                p.assign(n + 1, 1);
+                for (int i = 0; i < n; ++i) {
+                    h[i + 1] = (h[i] * seed + a[i]) % mod;
+                    p[i + 1] = (p[i] * seed) % mod;
+                }
+            }
+            i64 get(int l, int r) {
+                return (h[r] + mod - h[l - 1] * p[r - l + 1] % mod) % mod;
+            }
+        };
+
+        void solve() {
+            std::string a, b;
+            std::cin >> a >> b;
+
+            Hash<1333331, 998244353> hash1(a + a + b);
+            Hash<1145141, (int)(1e9 + 7)> hash2(a + a + b);
+
+            std::set<std::pair<int, int>> set;
+
+            for (int i = 1; i <= a.size(); i++) {
+                set.insert(std::make_pair(hash1.get(i, i + a.size() - 1),
+                                        hash2.get(i, i + a.size() - 1)));
+            }
+
+            int ans = 0;
+
+            for (int i = 1; i <= b.size() - a.size() + 1; i++) {
+                int h1 = hash1.get(i + a.size() * 2, i + a.size() * 3 - 1),
+                    h2 = hash2.get(i + a.size() * 2, i + a.size() * 3 - 1);
+                if (set.count(std::make_pair(h1, h2))) ans++;
+            }
+
+            std::cout << ans << '\n';
+        }
+
+        int main() {
+            std::ios::sync_with_stdio(false);
+            std::cin.tie(nullptr);
+
+            int t;
+            std::cin >> t;
+
+            while (t--) {
+                solve();
+            }
+
+            return 0;
+        }
+
+`星星 <https://acm.hdu.edu.cn/showproblem.php?pid=7434>`_
+*************************************************************
+
+    常规动态规划题， ``O(n*k)`` 复杂度能过。
+
+    .. code-block:: CPP
+
+        #include <bits/stdc++.h>
+
+        using i64 = long long;
+
+        void solve() {
+            int n, k;
+            std::cin >> n >> k;
+
+            std::vector<std::vector<i64>> dp(n + 1, std::vector<i64>(k + 1, 1e18));
+
+            dp[0][0] = 0;
+
+            for (int i = 1; i <= n; i++) {
+                std::vector<int> a(5, 0);
+
+                for (int x = 1; x <= 4; x++) {
+                    std::cin >> a[x];
+                }
+
+                for (int x = 0; x <= 4; x++) {
+                    for (int j = x; j <= k; j++) {
+                        dp[i][j] = std::min(dp[i][j], dp[i - 1][j - x] + a[x]);
+                    }
+                }
+            }
+
+            std::cout << dp[n][k] << '\n';
+        }
+
+        int main() {
+            std::ios::sync_with_stdio(false);
+            std::cin.tie(nullptr);
+
+            int t;
+            std::cin >> t;
+
+            while (t--) {
+                solve();
+            }
+
+            return 0;
+        }
+
+`树 <https://acm.hdu.edu.cn/showproblem.php?pid=7435>`_
+***************************************************************
+
+    难点不在于公式的推导，而是在于维护所需要的信息。
+
+    不难想到可以用权值树状数组来维护所需数据。
+
+    但需要合并多个子树的信息，同时还要计算子树之间的新的贡献。
+
+    这里可以借助树上启发式合并（dsu on tree）来解决这个问题。
+
+    假如我们遍历到某个节点 ``u`` ，我们需要计算以该点为根的子树对答案的贡献。
+
+    显然我们会先计算 ``u`` 节点子树的答案。
+
+    维护节点子树的信息很简单，但是如何计算子树之间的答案？
+
+    暴力的做法是每次清空或者再开一个树状数组，然后把子树节点一个个加进去算。
+
+    这样复杂度是 :math:`O(n^{2}log(n))` 。
+
+    但树上启发式合并（dsu on tree）的思想却不想盲目的清空，它想着留下一些有用的信息。
+
+    这时我们就需要接触一个崭新的名词：重儿子（最大的那颗子树）。
+
+    我们完全可以让重儿子最后执行计算，并且不会清空信息。
+
+    这样计算 ``u`` 节点的答案时，就直接遍历重儿子以外的节点，每次计算后就把这个点加入到维护的信息中。
+
+    计算完成后，我们根据 ``u`` 节点是不是重儿子来决定是否清空现场（注意，我们并不会每次都构建一个树状数组，而是共用一个，当然你也可以在 ``dfs`` 过程中构造，每次只接收重儿子返回的树状数组，但这样可能会造成不必要的开销）。
+
+    时间复杂度为 :math:`O(nlog^{2}(n))` 。
+
+    理解这个复杂度的由来可以参照树上合并子树的点集，每次都是将小的集合合并到大的集合里，也就是说只会遍历小的集合。
+
+    这个的时间复杂度一般为 :math:`O(nlog(n))` 。
+
+    .. code-block:: CPP
+
+        #include <bits/stdc++.h>
+
+        using u64 = unsigned long long;
+
+        template <typename T>
+        struct Fenwick {
+            int n;
+            std::vector<T> tr;
+            Fenwick(int n) : n(n), tr(n + 1) {}
+
+            inline int lowbit(int x) { return x & -x; }
+
+            void add(int i, T val) {
+                for (; i <= n; i += lowbit(i)) {
+                    tr[i] += val;
+                }
+            }
+
+            T sum(int i) {
+                T res = 0;
+                for (; i > 0; i -= lowbit(i)) {
+                    res += tr[i];
+                }
+                return res;
+            }
+
+            T query(int l, int r) {
+                if (l > r) return 0;
+                return sum(r) - sum(l - 1);
+            }
+
+            T kth(int k) {
+                int x = 0;
+                T res = 0;
+                for (int i = 1 << std::__lg(n); i; i /= 2) {
+                    if (x + i <= n && k >= tr[x + i]) {
+                        x += i;
+                        k -= tr[x];
+                        res += tr[x];
+                    }
+                }
+                return (k ? -1 : res);
+            }
+        };
+
+        int main() {
+            std::ios::sync_with_stdio(false);
+            std::cin.tie(nullptr);
+
+            int n;
+            std::cin >> n;
+
+            std::vector<std::vector<int>> eg(n + 1);
+
+            for (int i = 0; i < n - 1; i++) {
+                int u, v;
+                std::cin >> u >> v;
+                eg[u].push_back(v);
+                eg[v].push_back(u);
+            }
+
+            std::vector<u64> a(n + 1);
+
+            for (int i = 1; i <= n; i++) {
+                std::cin >> a[i];
+            }
+
+            std::vector<int> dfn(n + 1), end(n + 1), name(n + 1), size(n + 1, 0),
+                son(n + 1, 0);
+            std::vector<u64> ans(n + 1, 0ULL);
+            int timestamp = 0;
+
+            auto dfs1 = [&](auto &dfs, int u, int fa) -> void {
+                dfn[u] = ++timestamp;
+                name[timestamp] = u;
+                size[u] = 1;
+
+                for (auto it : eg[u]) {
+                    if (it == fa) continue;
+
+                    dfs(dfs, it, u);
+                    size[u] += size[it];
+
+                    if (size[it] > size[son[u]]) {
+                        son[u] = it;
+                    }
+                }
+                end[u] = timestamp;
+            };
+
+            dfs1(dfs1, 1, 0);
+
+            std::vector<Fenwick<u64>> fenwick(3, Fenwick<u64>(1e6));
+
+            u64 now = 0ULL;
+
+            auto add = [&](int u) {
+                u64 v = a[u];
+                now += v * (fenwick[0].sum(v - 1) * v - fenwick[1].sum(v - 1));
+                now += fenwick[2].query(v + 1, 1e6) - v * fenwick[1].query(v + 1, 1e6);
+
+                fenwick[0].add(v, 1ULL);
+                fenwick[1].add(v, v);
+                fenwick[2].add(v, v * v);
+            };
+
+            auto del = [&](int u) {
+                u64 v = a[u];
+                now -= v * (fenwick[0].sum(v - 1) * v - fenwick[1].sum(v - 1));
+                now -= fenwick[2].query(v + 1, 1e6) - v * fenwick[1].query(v + 1, 1e6);
+
+                fenwick[0].add(v, -1ULL);
+                fenwick[1].add(v, -v);
+                fenwick[2].add(v, -v * v);
+            };
+
+            auto dfs2 = [&](auto &dfs, int u, int fa, bool exist) -> void {
+                for (auto it : eg[u]) {
+                    if (it == fa || it == son[u]) continue;
+                    dfs(dfs, it, u, 0);
+                }
+
+                if (son[u]) dfs(dfs, son[u], u, 1);
+
+                for (auto it : eg[u]) {
+                    if (it == fa || it == son[u]) continue;
+                    for (int i = dfn[it]; i <= end[it]; i++) {
+                        add(name[i]);
+                    }
+                }
+
+                add(u);
+
+                ans[u] = now;
+                if (!exist) {
+                    for (int i = dfn[u]; i <= end[u]; i++) {
+                        del(name[i]);
+                    }
+                }
+            };
+
+            dfs2(dfs2, 1, 0, 1);
+
+            u64 res = 0;
+
+            for (auto it : ans) {
+                res ^= it * 2ULL;
+            }
+
+            std::cout << res << '\n';
+
+            return 0;
+        }
+
+`位运算 <https://acm.hdu.edu.cn/showproblem.php?pid=7440>`_
+*****************************************************************
+
+    思路很简单，对于每一位分开考虑就行了，之后结果相乘。
+
+    注意要开 ``long long`` 。
+
+    .. code-block:: CPP
+
+        #include <bits/stdc++.h>
+
+        using i64 = long long;
+
+        int get(int u) {
+            int sum = 0;
+            for (int i = 0; i < (1 << 4); i++) {
+                sum += (((((i >> 3) & (i >> 2)) ^ (i >> 1)) | (i >> 0)) & 1) == u;
+            }
+            return sum;
+        }
+
+        void solve() {
+            int n, k;
+            std::cin >> n >> k;
+
+            i64 ans = 1;
+
+            for (int i = 0; i < k; i++) {
+                ans *= get((n >> i) & 1);
+            }
+
+            std::cout << ans << '\n';
+        }
+
+        int main() {
+            std::ios::sync_with_stdio(false);
+            std::cin.tie(nullptr);
+
+            int t;
+            std::cin >> t;
+
+            while (t--) {
+                solve();
+            }
+
+            return 0;
+        }

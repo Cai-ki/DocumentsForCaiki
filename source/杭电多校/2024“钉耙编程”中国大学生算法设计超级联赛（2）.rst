@@ -1,0 +1,52 @@
+.. index:: 2024“钉耙编程”中国大学生算法设计超级联赛（2）
+
+2024“钉耙编程”中国大学生算法设计超级联赛（2）
+=============================================
+
+`URL划分 <https://acm.hdu.edu.cn/showproblem.php?pid=7451>`_
+**************************************************************
+
+    .. code-block:: CPP
+
+        #include <bits/stdc++.h>
+
+        void solve() {
+            std::string s;
+            std::cin >> s;
+
+            std::string str = "";
+
+            int cnt = 0;
+
+            for (auto it : s) {
+                if (it == '/' || it == ':') {
+                    if (str.size()) {
+                        cnt++;
+                        if (cnt >= 3) {
+                            if (std::find(str.begin(), str.end(), '=') != str.end()) {
+                                std::cout << str << '\n';
+                            }
+                        } else {
+                            std::cout << str << '\n';
+                        }
+                        str = "";
+                    }
+                } else {
+                    str += it;
+                }
+            }
+        }
+
+        int main() {
+            std::ios::sync_with_stdio(false);
+            std::cin.tie(nullptr);
+
+            int t;
+            std::cin >> t;
+
+            while (t--) {
+                solve();
+            }
+
+            return 0;
+        }

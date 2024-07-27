@@ -25,7 +25,7 @@ Rope
 
 最重要的一点是，为了实现某些功能往往要比正解的数据结构多带一个 ``log`` 量级的复杂度，而且有可能会遇到卡常的情况。
 
-这种情况也不绝对，当使用 ``Rope`` 进行可持久化时，其它数据结构操作的时间复杂度能达到 ``log * log`` ，而 ``Rope`` 理论上则依然是 ``log`` ，这都是由于 ``O(1)`` 拷贝所带来的优势。
+这种情况也不绝对，当使用 ``Rope`` 进行可持久化时，其它数据结构操作的时间复杂度能达到 ``log * log`` ，而 ``Rope`` 理论上则依然是 ``log`` ，这都是由于 ``O(1)`` 拷贝所带来的优势，这也使得在可持久化方面 ``Rope`` 勉强能和这些数据结构 ``46`` 开。
 
 当然，这些劣势在 ``Rope`` 极其简单的使用方式下都不足挂齿，它真的是太好写了。
 
@@ -108,7 +108,113 @@ Rope
             return 0;
         }
 
+`P3391 【模板】文艺平衡树 <https://www.luogu.com.cn/problem/P3391>`_
+**********************************************************************
 
+    .. code-block:: CPP
+
+        #include <bits/stdc++.h>
+
+        #include <ext/rope>
+
+        int main() {
+            int n, m;
+            std::cin >> n >> m;
+            __gnu_cxx::rope<int> a, b;
+
+            for (int i = 0; i < n; i++) {
+                a.append(i + 1);
+                b.append(n - i);
+            }
+
+            while (m--) {
+                int l, r;
+                std::cin >> l >> r;
+                --l, --r;
+                int len = r - l + 1;
+
+                auto center = a.substr(l, len);
+                a = a.substr(0, l) + b.substr(n - l - len, len) +
+                    a.substr(r + 1, n - (r + 1));
+                b = b.substr(0, n - l - len) + center + b.substr(n - l, n - (n - l));
+            }
+
+            for (auto it : a) {
+                std::cout << it << ' ';
+            }
+
+            return 0;
+        }
+
+`P6136 【模板】普通平衡树（数据加强版） <https://www.luogu.com.cn/problem/P6136>`_
+************************************************************************************
+    
+    这道题使用 ``Rope`` 就通过不了。
+
+`P3835 【模板】可持久化平衡树 <https://www.luogu.com.cn/problem/P3835>`_
+***********************************************************************************
+
+    这题 ``25`` 个点， ``TLE`` 了两个点。可以看到，和正常写法相比还是过于取巧了。
+
+    不过至少过了大部分测试数据不是吗？
+
+    .. code-block:: CPP
+
+        #include <bits/stdc++.h>
+
+        #include <ext/rope>
+
+        int main() {
+            int n, inf = 2147483647;
+            std::cin >> n;
+            __gnu_cxx::rope<int> rope;
+            std::vector<__gnu_cxx::rope<int>> backup;
+            rope.push_back(-inf);
+            rope.push_back(inf);
+            backup.push_back(rope);
+
+            auto lower_bound = [&](int u) -> int {
+                return std::lower_bound(rope.begin(), rope.end(), u) - rope.begin();
+            };
+
+            auto upper_bound = [&](int u) -> int {
+                return std::upper_bound(rope.begin(), rope.end(), u) - rope.begin();
+            };
+
+            while (n--) {
+                int v, op, x;
+                std::cin >> v >> op >> x;
+
+                rope = backup[v];
+
+                if (op == 1) {
+                    int idx = lower_bound(x);
+                    rope.insert(idx, x);
+                } else if (op == 2) {
+                    int idx = lower_bound(x);
+                    if (x == rope[idx]) rope.erase(idx, 1);
+                } else if (op == 3) {
+                    int idx = lower_bound(x);
+                    std::cout << idx << '\n';
+                } else if (op == 4) {
+                    std::cout << rope[x] << '\n';
+                } else if (op == 5) {
+                    int idx = lower_bound(x);
+                    std::cout << rope[idx - 1] << '\n';
+                } else {
+                    int idx = upper_bound(x);
+                    std::cout << rope[idx] << '\n';
+                }
+                backup.push_back(rope);
+            }
+
+            return 0;
+        }
+
+`P5055 【模板】可持久化文艺平衡树 <https://www.luogu.com.cn/problem/P5055>`_
+******************************************************************************
+
+    目前想不出来怎么写。
 
 
 
