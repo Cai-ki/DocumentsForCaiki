@@ -151,6 +151,78 @@ Rope
     
     这道题使用 ``Rope`` 就通过不了。
 
+    ``23`` 个点只过了 ``9`` 个。
+
+    .. code-block:: CPP
+
+        #include <bits/stdc++.h>
+
+        #include <ext/rope>
+
+        int main() {
+            int n, m, inf = (1 << 30);
+            std::cin >> n >> m;
+
+            std::vector<int> a(n);
+
+            for (auto &it : a) {
+                std::cin >> it;
+            }
+
+            std::sort(a.begin(), a.end());
+
+            __gnu_cxx::rope<int> t;
+            t.push_back(-inf);
+            for (auto it : a) {
+                t.push_back(it);
+            }
+            t.push_back(inf);
+
+            int res = 0, last = 0;
+
+            auto find = [&](int u) -> int {
+                return std::lower_bound(t.begin(), t.end(), u) - t.begin();
+            };
+
+            auto find_next = [&](int u) -> int {
+                return std::upper_bound(t.begin(), t.end(), u) - t.begin();
+            };
+
+            while (m--) {
+                int op, x;
+                std::cin >> op >> x;
+
+                x ^= last;
+
+                if (op == 1) {
+                    int idx = find(x);
+                    t.insert(idx, x);
+                } else if (op == 2) {
+                    int idx = find(x);
+                    t.erase(idx, 1);
+                } else if (op == 3) {
+                    int idx = find(x);
+                    last = idx;
+                    res ^= idx;
+                } else if (op == 4) {
+                    last = t[x];
+                    res ^= t[x];
+                } else if (op == 5) {
+                    int idx = find(x);
+                    last = t[idx - 1];
+                    res ^= t[idx - 1];
+                } else {
+                    int idx = find_next(x);
+                    last = t[idx];
+                    res ^= t[idx];
+                }
+            }
+
+            std::cout << res << '\n';
+
+            return 0;
+        }
+
 `P3835 【模板】可持久化平衡树 <https://www.luogu.com.cn/problem/P3835>`_
 ***********************************************************************************
 
@@ -211,10 +283,48 @@ Rope
             return 0;
         }
 
-`P5055 【模板】可持久化文艺平衡树 <https://www.luogu.com.cn/problem/P5055>`_
-******************************************************************************
+`P3919 【模板】可持久化线段树 1（可持久化数组） <https://www.luogu.com.cn/problem/P3919>`_
+****************************************************************************************************
 
-    目前想不出来怎么写。
+    ``12`` 个点 ``TLE`` 了 ``4`` 个。
 
+    测试数据太狠了。
 
+    .. code-block:: CPP
 
+        #include <bits/stdc++.h>
+
+        #include <ext/rope>
+
+        int main() {
+            int n, m;
+            std::cin >> n >> m;
+            __gnu_cxx::rope<int> rope;
+            std::vector<__gnu_cxx::rope<int>> backup;
+
+            while (n--) {
+                int x;
+                std::cin >> x;
+                rope.push_back(x);
+            }
+
+            backup.push_back(rope);
+
+            while (m--) {
+                int v, op, loc, x;
+                std::cin >> v >> op >> loc;
+                --loc;
+                rope = backup[v];
+
+                if (op == 1) {
+                    std::cin >> x;
+                    rope.replace(loc, x);
+                } else {
+                    std::cout << rope[loc] << '\n';
+                }
+
+                backup.push_back(rope);
+            }
+
+            return 0;
+        }
