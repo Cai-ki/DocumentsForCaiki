@@ -1,4 +1,4 @@
-`E - Maximum Glutton  <https://atcoder.jp/contests/abc364/tasks/abc364_e>`_
+`Maximum Glutton  <https://atcoder.jp/contests/abc364/tasks/abc364_e>`_
 ====================================================================================
 
     显然可以用动态规划。

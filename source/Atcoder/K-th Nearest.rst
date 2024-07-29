@@ -1,4 +1,4 @@
-`D - K-th Nearest <https://atcoder.jp/contests/abc364/tasks/abc364_d>`_
+`K-th Nearest <https://atcoder.jp/contests/abc364/tasks/abc364_d>`_
 ==========================================================================
 
     使用二分解决该问题。
