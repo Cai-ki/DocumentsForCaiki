@@ -3,8 +3,84 @@
 2024“钉耙编程”中国大学生算法设计超级联赛（2）
 =============================================
 
+`传奇勇士小凯 <https://acm.hdu.edu.cn/showproblem.php?pid=7450>`_
+********************************************************************
+
+    每个节点的贡献是分开的，为 :math:`\frac{15}{p_i}` 。
+
+    由于不会走回头路，所以从根节点 ``DFS`` 到叶子节点过程中取最大的答案即可。
+
+    .. code-block:: CPP
+
+        #include <bits/stdc++.h>
+
+        using i64 = long long;
+
+        void solve() {
+            int n;
+            std::cin >> n;
+
+            std::vector<std::vector<int>> eg(n);
+
+            for (int i = 0; i < n - 1; i++) {
+                int u, v;
+                std::cin >> u >> v;
+                u--, v--;
+                eg[u].push_back(v);
+                eg[v].push_back(u);
+            }
+
+            std::vector<int> p(n);
+
+            for (auto &it : p) {
+                std::cin >> it;
+            }
+
+            std::pair<i64, i64> ans{0, 1};
+
+            auto dfs = [&](auto &dfs, int u, int fa, std::pair<i64, i64> P) -> void {
+                auto &[a1, b1] = P;
+                int a2 = 15, b2 = p[u];
+
+                a1 = a1 * b2 + a2 * b1;
+                b1 *= b2;
+
+                i64 gcd = std::__gcd(a1, b1);
+                a1 /= gcd, b1 /= gcd;
+
+                if (1.0 * a1 / b1 >= 1.0 * ans.first / ans.second) {
+                    ans = P;
+                }
+
+                for (auto it : eg[u]) {
+                    if (it == fa) continue;
+                    dfs(dfs, it, u, P);
+                }
+            };
+
+            dfs(dfs, 0, -1, {0, 1});
+
+            std::cout << ans.first << '/' << ans.second << "\n";
+        }
+
+        int main() {
+            std::ios::sync_with_stdio(false);
+            std::cin.tie(nullptr);
+
+            int t;
+            std::cin >> t;
+
+            while (t--) {
+                solve();
+            }
+
+            return 0;
+        }
+
 `URL划分 <https://acm.hdu.edu.cn/showproblem.php?pid=7451>`_
 **************************************************************
+
+    签到题。
 
     .. code-block:: CPP
 
@@ -34,6 +110,176 @@
                 } else {
                     str += it;
                 }
+            }
+        }
+
+        int main() {
+            std::ios::sync_with_stdio(false);
+            std::cin.tie(nullptr);
+
+            int t;
+            std::cin >> t;
+
+            while (t--) {
+                solve();
+            }
+
+            return 0;
+        }
+
+`女神的睿智 <https://acm.hdu.edu.cn/showproblem.php?pid=7454>`_
+************************************************************************
+
+    签到题。
+
+    .. code-block:: CPP
+
+        #include <bits/stdc++.h>
+
+        void solve() {
+            std::string s;
+            std::cin >> s;
+
+            std::map<char, int> cnt;
+            std::vector<char> a(4), b(2);
+
+            for (auto it : s) {
+                cnt[it]++;
+            }
+
+            for (int i = 0; i < 4; i++) {
+                a[i] = s[i * 2];
+            }
+            for (int i = 0; i < 2; i++) {
+                b[i] = a[i * 2];
+            }
+
+            char ans = 'N';
+
+            if (b[0] == b[1]) {
+                ans = b[0];
+            } else if (cnt[b[0]] != cnt[b[1]]) {
+                ans = cnt[b[0]] > cnt[b[1]] ? b[0] : b[1];
+            }
+
+            std::cout << ans << '\n';
+        }
+
+        int main() {
+            std::ios::sync_with_stdio(false);
+            std::cin.tie(nullptr);
+
+            int t;
+            std::cin >> t;
+
+            while (t--) {
+                solve();
+            }
+
+            return 0;
+        }
+
+`图计算 <https://acm.hdu.edu.cn/showproblem.php?pid=7456>`_
+****************************************************************
+
+    可以发现图的数量最多不超过 ``101`` 个，每个图的连通性都可以单独用并查集维护。
+
+    记 :math:`fa_{u,i}` 表示点 ``u`` 在 ``i`` 图上所属连通块的祖先。
+
+    对于点对 :math:`(u,v)` 在所有图均连通 ，意味着 :math:`fa_{u,1},fa_{u,2},...fa_{u,n}=fa_{v,1},fa_{v,2},...,fa_{v,n}` 。
+
+    我们完全可以用哈希维护在这个长度为 ``d + 1`` 的数列。
+
+    则询问变为统计 ``n`` 个节点一一对应的 ``n`` 种字符串之间有哪些两两相等。显然可以开个桶记录每种哈希值出现次数 ``cnt`` ，该类哈希对答案的贡献为 :math:`\frac{cnt*(cnt-1)}{2}` 。
+
+    然后考虑在并查集维护连通性的过程中维护上述字符串的哈希值。发现每次加边合并过程中，受影响的字符有仅有祖先被更改的位置对应的字符。发现通过并查集按秩合并可以使得每次祖先被更改的位置均摊为 :math:`log(n)` 个，于是直接在按秩合并时修改祖先和哈希值并更新答案即可。
+
+    哈希实现就是单纯对 ``1`` 到 ``d + 1`` 每个随机给一个权值 :math:`weight_i` ，对于点 ``u`` 的哈希值为 :math:`\sum weight_i * fa_{u,i}(1\le i\le d+1)` ，然后借用 ``unsigned long long`` 自然溢出。  
+
+    .. code-block:: CPP
+
+        #include <bits/stdc++.h>
+
+        using i64 = long long;
+        using u64 = unsigned long long;
+
+        constexpr int N = 5e4 + 1, D = 102;
+
+        int fa[N][D], w;
+        std::vector<int> son[N][D];
+
+        i64 ans;
+        u64 hash[N], weight[D];
+        std::unordered_map<u64, int> cnt;
+
+        int find(int u) {
+            while (u != fa[u][w]) u = fa[u][w];
+            return u;
+        }
+
+        void merge(int u, int v) {
+            int fu = find(u), fv = find(v);
+            if (fu == fv) return;
+
+            if (son[fu][w].size() < son[fv][w].size()) {
+                std::swap(fu, fv);
+            }
+
+            fa[fv][w] = fu;
+            for (int it : son[fv][w]) {
+                fa[it][w] = fu;
+                son[fu][w].push_back(it);
+                ans -= 2 * (cnt[hash[it]] - 1), cnt[hash[it]]--;
+                hash[it] += (fu - fv) * weight[w];
+                ans += 2 * cnt[hash[it]], cnt[hash[it]]++;
+            }
+
+            son[fv][w].clear();
+        }
+
+        void solve() {
+            int n, m, d, k;
+            std::cin >> n >> m >> d >> k;
+
+            for (int i = 1; i <= d + 1; i++) {
+                weight[i] = 1ULL * rand() * rand();
+            }
+            for (int i = 1; i <= n; i++) {
+                fa[i][1] = i;
+                son[i][1] = {i};
+            }
+
+            w = 1;
+            while (m--) {
+                int u, v;
+                std::cin >> u >> v;
+                merge(u, v);
+            }
+
+            for (int i = 1; i <= n; i++) {
+                for (int j = 2; j <= d + 1; j++) {
+                    fa[i][j] = fa[i][1];
+                    son[i][j] = son[i][1];
+                }
+            }
+
+            ans = 0;
+            cnt.clear();
+            for (int i = 1; i <= n; i++) {
+                hash[i] = 0;
+                for (int j = 1; j <= d + 1; j++) {
+                    hash[i] += 1ULL * weight[j] * fa[i][j];
+                }
+                cnt[hash[i]]++;
+            }
+            for (auto it : cnt) ans += 1LL * it.second * (it.second - 1);
+
+            while (k--) {
+                int u, v;
+                std::cin >> u >> v >> w;
+                merge(u, v);
+
+                std::cout << ans / 2 << '\n';
             }
         }
 
