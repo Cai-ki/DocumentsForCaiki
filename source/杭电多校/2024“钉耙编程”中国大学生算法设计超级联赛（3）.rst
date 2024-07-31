@@ -1,0 +1,248 @@
+2024“钉耙编程”中国大学生算法设计超级联赛（3）
+=============================================
+
+`深度自同构 <https://acm.hdu.edu.cn/showproblem.php?pid=7457>`_
+******************************************************************
+
+    显然，深度自同构的森林的各个树应该完全相同，各个树的子树同理。
+
+    可以使用 ``DP`` 。
+
+    设 :math:`dp_i` 为有 ``i`` 个节点的深度自同构森林的数量。
+
+    考虑如何状态转移。
+
+    对于一棵有跟树来说，假如删去根节点，这颗树就自然转化成了一个森林。
+
+    对于一个森林来说，加上一个根节点，这个森林就转化成了一棵树。
+
+    由于深度自同构必须满足子树完全相同，这就意味着对于一个 :math:`dp_i` ，可以给这个森林加上一个根节点。
+
+    用 :math:`dp_i` 来递推所有大小是 ``i + 1`` 倍数的新的  :math:`dp_{k(i+1)},(k\in (1,2,...))` 。
+
+    相当于说用这个森林构成一棵树，用不同数量的这种树再构成新的森林。
+
+    显然这会涵盖所有情况。
+
+    注意，:math:`dp_i` 要从 ``0`` 开始， :math:`dp_0=1`。
+
+    .. code-block:: CPP
+
+        #include <bits/stdc++.h>
+
+        constexpr int mod = 998244353;
+
+        int main() {
+            int n;
+            std::cin >> n;
+
+            std::vector<int> dp(n + 1, 0);
+
+            dp[0] = 1;
+
+            for (int i = 0; i <= n; i++) {
+                for (int j = i + 1; j <= n; j += (i + 1)) {
+                    dp[j] += dp[i];
+                    dp[j] %= mod;
+                }
+                if (i) std::cout << dp[i] << ' ';
+            }
+
+            return 0;
+        }
+
+`单峰数列 <https://acm.hdu.edu.cn/showproblem.php?pid=7463>`_
+***************************************************************
+
+    显然要用线段树来维护。
+
+    不过我们只需要维护原数组的差分数组。
+
+    更改操作是区间加上某个数，差分数组具有先天优势，具体实现不用多说。
+
+    而对于某个查询无论询问区间是升序，降序还是全相等，只需要看这个区间的差分数组是否全正，全负，全 ``0`` 即可。
+
+    接下来看如何判断单峰数列。
+
+    对于一个单峰数列，其差分数组左侧应全为正数右侧应全为负数。
+
+    在线段树上合并两个区间时其实也很好判断，满足条件的仅仅有三种情况：
+
+    - 左正右负
+    - 左峰右负
+    - 左正右峰
+  
+    具体实现这里不再细讲，注意，用结构体来维护节点信息更方便并且易于理解。
+
+    .. code-block:: CPP
+
+        #include <bits/stdc++.h>
+
+        constexpr int N = 2e5 + 10;
+
+        int n, a[N];
+
+        namespace seg {
+        struct Node {
+            bool positive, negative, zero, mountain;
+        } t[N << 2];
+
+        Node merge(Node l, Node r) {
+            return Node{l.positive && r.positive, l.negative && r.negative,
+                        l.zero && r.zero,
+                        (l.positive && r.negative) || (l.mountain && r.negative) ||
+                            (l.positive && r.mountain && r.mountain)};
+        };
+
+        void push_up(int u) { t[u] = merge(t[u << 1], t[u << 1 | 1]); }
+
+        void build(int u, int L, int R) {
+            if (L == R) {
+                t[u] = Node{a[L] > 0, a[L] < 0, a[L] == 0, false};
+                return;
+            }
+            int mid = (L + R) >> 1;
+            build(u << 1, L, mid);
+            build(u << 1 | 1, mid + 1, R);
+            push_up(u);
+        }
+
+        void modify(int u, int L, int R, int pos, int val) {
+            if (L == R) {
+                t[u] = Node{val > 0, val < 0, val == 0, false};
+                return;
+            }
+            int mid = (L + R) >> 1;
+
+            if (pos <= mid) {
+                modify(u << 1, L, mid, pos, val);
+            } else {
+                modify(u << 1 | 1, mid + 1, R, pos, val);
+            }
+            push_up(u);
+        }
+
+        Node query(int u, int L, int R, int l, int r) {
+            if (L >= l && R <= r) {
+                return t[u];
+            }
+            int mid = (L + R) >> 1;
+
+            if (mid >= l && mid < r) {
+                return merge(query(u << 1, L, mid, l, r),
+                            query(u << 1 | 1, mid + 1, R, l, r));
+            } else if (mid >= l) {
+                return query(u << 1, L, mid, l, r);
+            } else {
+                return query(u << 1 | 1, mid + 1, R, l, r);
+            }
+        }
+
+        bool query(int q, int l, int r) {
+            if (l == r) {
+                return q != 5;
+            }
+
+            Node result = query(1, 1, n, l + 1, r);
+
+            if (q == 2) {
+                return result.zero;
+            } else if (q == 3) {
+                return result.positive;
+            } else if (q == 4) {
+                return result.negative;
+            } else {
+                return result.mountain;
+            }
+        }
+        }  // namespace seg
+
+        int main() {
+            std::cin >> n;
+
+            for (int i = 1; i <= n; i++) {
+                std::cin >> a[i];
+            }
+
+            for (int i = n; i >= 2; i--) {
+                a[i] -= a[i - 1];
+            }
+            seg::build(1, 1, n);
+
+            int q;
+            std::cin >> q;
+
+            while (q--) {
+                int op, l, r;
+                std::cin >> op >> l >> r;
+
+                if (op == 1) {
+                    int x;
+                    std::cin >> x;
+                    a[l] += x, a[r + 1] -= x;
+                    seg::modify(1, 1, n, l, a[l]);
+                    if (r + 1 <= n) seg::modify(1, 1, n, r + 1, a[r + 1]);
+                } else {
+                    std::cout << seg::query(op, l, r) << '\n';
+                }
+            }
+
+            return 0;
+        }
+
+`死亡之组 <https://acm.hdu.edu.cn/showproblem.php?pid=7468>`_
+*****************************************************************
+
+    先把除 ``1`` 号队伍外按照实力排序。
+
+    根据 ``1`` 号队伍实力大小讨论，小于 ``L`` 就选两个最小的再选一个最大的。
+
+    否则就全选最小的。
+
+    .. code-block:: CPP
+
+        #include <bits/stdc++.h>
+
+        void solve() {
+            int n, L, D;
+            std::cin >> n >> L >> D;
+
+            std::vector<int> a(n);
+
+            for (auto &it : a) {
+                std::cin >> it;
+            }
+
+            std::sort(a.begin() + 1, a.end());
+
+            std::vector<int> v{a[0]};
+            v.push_back(a[1]);
+            v.push_back(a[2]);
+            if (a[0] < L) {
+                v.push_back(a[n - 1]);
+            } else {
+                v.push_back(a[3]);
+            }
+
+            std::sort(v.begin(), v.end());
+
+            if (v[2] < L && v[3] - v[0] > D) {
+                std::cout << "Yes\n";
+            } else {
+                std::cout << "No\n";
+            }
+        }
+
+        int main() {
+            std::ios::sync_with_stdio(false);
+            std::cin.tie(nullptr);
+
+            int t;
+            std::cin >> t;
+
+            while (t--) {
+                solve();
+            }
+
+            return 0;
+        }
