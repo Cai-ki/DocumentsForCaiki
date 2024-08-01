@@ -1,0 +1,48 @@
+编译优化
+========
+
+    ``#pragma GCC optimize(0)`` -> 
+    
+    ``#pragma GCC optimize(3)`` -> 
+    
+    ``#pragma GCC optimize(3, "inline")``
+
+    ``6s`` -> ``2s`` -> ``1.2s``
+
+    吸氧大法好 ``QAQ`` 。
+
+    .. code-block:: CPP
+
+        #pragma GCC optimize(3, "inline")
+        #include <bits/stdc++.h>
+
+        using i64 = long long;
+        using u64 = unsigned long long;
+
+        i64 get_time() {
+            return std::chrono::time_point_cast<std::chrono::milliseconds>(
+                    std::chrono::system_clock::now())
+                .time_since_epoch()
+                .count();
+        }
+
+        u64 f(int u) {
+            if (u == 1)
+                return 1ULL;
+            else if (u == 2)
+                return 1ULL;
+            else {
+                return f(u - 2) + f(u - 1);
+            }
+        }
+
+        int main() {
+            i64 start = get_time();
+
+            std::cout << f(45) << '\n';
+
+            i64 end = get_time();
+            std::cout << end - start << "ms\n";
+
+            return 0;
+        }

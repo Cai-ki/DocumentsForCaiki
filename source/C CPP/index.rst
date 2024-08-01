@@ -1,6 +1,6 @@
-.. index:: C语言
+.. index:: C/CPP
 
-C语言
+C/CPP
 ============
 
    .. toctree::
