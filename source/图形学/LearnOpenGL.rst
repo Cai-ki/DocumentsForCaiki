@@ -14,7 +14,7 @@ Hello Window
     
     代码整体不难理解，都是对各自函数的解释，我们这里就continue了。
 
-    `代码链接 <../_static/图形学/LearnOpenGL/HelloWindow.html>`_
+    `HelloWindow <../_static/图形学/LearnOpenGL/HelloWindow.html>`_
 
     .. image:: ../_static/图形学/LearnOpenGL/HelloWindow.png
         :alt: Hello Window
@@ -41,7 +41,7 @@ Hello Triangle
     
     绑定0意味着，让这个家庭的某个职位的成员滚蛋。
 
-    `代码链接 <../_static/图形学/LearnOpenGL/HelloTriangle.html>`_
+    `HelloTriangle <../_static/图形学/LearnOpenGL/HelloTriangle.html>`_
 
     .. image:: ../_static/图形学/LearnOpenGL/HelloTriangle1.png
         :alt: Hello Triangle1
@@ -51,9 +51,9 @@ Hello Triangle
         :alt: Hello Triangle2
         :align: center   
 
-    #. `作业1代码链接 <../_static/图形学/LearnOpenGL/HelloTriangle_homework1.html>`_     
-    #. `作业2代码链接 <../_static/图形学/LearnOpenGL/HelloTriangle_homework2.html>`_
-    #. `作业3代码链接 <../_static/图形学/LearnOpenGL/HelloTriangle_homework3.html>`_
+    #. `HelloTriangle_homework1 <../_static/图形学/LearnOpenGL/HelloTriangle_homework1.html>`_     
+    #. `HelloTriangle_homework2 <../_static/图形学/LearnOpenGL/HelloTriangle_homework2.html>`_
+    #. `HelloTriangle_homework3 <../_static/图形学/LearnOpenGL/HelloTriangle_homework3.html>`_
 
 Shaders
 ****************
@@ -62,28 +62,28 @@ Shaders
     
     之后就更简单了，封装一个着色器类便于使用，毕竟着色器编译链接部分很板。
 
-    `代码链接 <../_static/图形学/LearnOpenGL/Shaders1.html>`_
+    `Shaders1 <../_static/图形学/LearnOpenGL/Shaders1.html>`_
 
     .. image:: ../_static/图形学/LearnOpenGL/Shaders1.png
         :alt: Shaders1
         :align: center
 
-    `代码链接 <../_static/图形学/LearnOpenGL/Shaders2.html>`_
+    `Shaders2 <../_static/图形学/LearnOpenGL/Shaders2.html>`_
 
     .. image:: ../_static/图形学/LearnOpenGL/Shaders2.png
         :alt: Shaders2
         :align: center
 
-    `代码链接 <../_static/图形学/LearnOpenGL/Shaders3.html>`_
-    `代码链接 <../_static/图形学/LearnOpenGL/Shaders4.html>`_
+    `Shaders3 <../_static/图形学/LearnOpenGL/Shaders3.html>`_
+    `Shaders4 <../_static/图形学/LearnOpenGL/Shaders4.html>`_
 
     .. image:: ../_static/图形学/LearnOpenGL/Shaders34.png
         :alt: Shaders34
         :align: center
 
-    #. `作业1代码链接 <../_static/图形学/LearnOpenGL/Shaders_homework1.html>`_     
-    #. `作业2代码链接 <../_static/图形学/LearnOpenGL/Shaders_homework2.html>`_
-    #. `作业3代码链接 <../_static/图形学/LearnOpenGL/Shaders_homework3.html>`_
+    #. `Shaders_homework1 <../_static/图形学/LearnOpenGL/Shaders_homework1.html>`_     
+    #. `Shaders_homework2 <../_static/图形学/LearnOpenGL/Shaders_homework2.html>`_
+    #. `Shaders_homework3 <../_static/图形学/LearnOpenGL/Shaders_homework3.html>`_
 
 Textures
 ***************
@@ -92,9 +92,9 @@ Textures
 
     我自己改了一部分代码，教程的图片好难看(⊙﹏⊙)，还是我的流萤好看。
 
-    `代码链接 <../_static/图形学/LearnOpenGL/Textures1.html>`_
+    `Textures1 <../_static/图形学/LearnOpenGL/Textures1.html>`_
 
-    `代码链接 <../_static/图形学/LearnOpenGL/Textures2.html>`_
+    `Textures2 <../_static/图形学/LearnOpenGL/Textures2.html>`_
 
     .. image:: ../_static/图形学/LearnOpenGL/Textures_流萤.png
         :alt: Textures_流萤
@@ -102,10 +102,10 @@ Textures
     
     `原画链接 <../_static/图形学/LearnOpenGL/流萤.jpg>`_
 
-    #. `作业1代码链接 <../_static/图形学/LearnOpenGL/Textures_homework1.html>`_     
-    #. `作业2代码链接 <../_static/图形学/LearnOpenGL/Textures_homework2.html>`_
-    #. `作业3代码链接 <../_static/图形学/LearnOpenGL/Textures_homework3.html>`_
-    #. `作业4代码链接 <../_static/图形学/LearnOpenGL/Textures_homework3.html>`_
+    #. `Textures_homework1 <../_static/图形学/LearnOpenGL/Textures_homework1.html>`_     
+    #. `Textures_homework2 <../_static/图形学/LearnOpenGL/Textures_homework2.html>`_
+    #. `Textures_homework3 <../_static/图形学/LearnOpenGL/Textures_homework3.html>`_
+    #. `Textures_homework4 <../_static/图形学/LearnOpenGL/Textures_homework3.html>`_
 
 Transformations
 **************************
@@ -116,14 +116,14 @@ Transformations
 
     作业我没怎么看，之后用到再翻找吧。。。
 
-    `代码链接 <../_static/图形学/LearnOpenGL/Transformations.html>`_
+    `Transformations <../_static/图形学/LearnOpenGL/Transformations.html>`_
 
     .. image:: ../_static/图形学/LearnOpenGL/Transformations.png
         :alt: Transformations
         :align: center
 
-    #. `作业1代码链接 <../_static/图形学/LearnOpenGL/Transformations_homework1.html>`_     
-    #. `作业2代码链接 <../_static/图形学/LearnOpenGL/Transformations_homework2.html>`_
+    #. `Transformations_homework1 <../_static/图形学/LearnOpenGL/Transformations_homework1.html>`_     
+    #. `Transformations_homework2 <../_static/图形学/LearnOpenGL/Transformations_homework2.html>`_
 
 Coordinate Systems
 **************************
@@ -137,39 +137,39 @@ Coordinate Systems
         V_{clip} = M_{projection} \cdot M_{view} \cdot M_{model} \cdot V_{local}
 
 
-    `代码链接 <../_static/图形学/LearnOpenGL/CoordinateSystems1.html>`_
+    `CoordinateSystems1 <../_static/图形学/LearnOpenGL/CoordinateSystems1.html>`_
 
     .. image:: ../_static/图形学/LearnOpenGL/CoordinateSystems1.png
         :alt: Coordinate Systems1
         :align: center
 
-    `代码链接 <../_static/图形学/LearnOpenGL/CoordinateSystems2.html>`_
+    `CoordinateSystems2 <../_static/图形学/LearnOpenGL/CoordinateSystems2.html>`_
 
     .. image:: ../_static/图形学/LearnOpenGL/CoordinateSystems2.png
         :alt: Coordinate Systems2
         :align: center
 
-    `代码链接 <../_static/图形学/LearnOpenGL/CoordinateSystems3.html>`_
+    `CoordinateSystems3 <../_static/图形学/LearnOpenGL/CoordinateSystems3.html>`_
 
     .. image:: ../_static/图形学/LearnOpenGL/CoordinateSystems3.png
         :alt: Coordinate Systems3
         :align: center
 
-    #. `作业1代码链接 <../_static/图形学/LearnOpenGL/CoordinateSystems_homework.html>`_ 
+    #. `CoordinateSystems_homework <../_static/图形学/LearnOpenGL/CoordinateSystems_homework.html>`_ 
 
 Camera
 *****************
 
     逻辑不难理解，所以代码直接跳到最后一部分了。
 
-    `代码链接 <../_static/图形学/LearnOpenGL/Camera.html>`_
+    `Camera <../_static/图形学/LearnOpenGL/Camera.html>`_
 
-    `Camera类 <../_static/图形学/LearnOpenGL/Camera_class.html>`_
+    `Camera_class <../_static/图形学/LearnOpenGL/Camera_class.html>`_
     
-    `新代码链接 <../_static/图形学/LearnOpenGL/Camera_useclass.html>`_
+    `Camera_useclass <../_static/图形学/LearnOpenGL/Camera_useclass.html>`_
     
-    #. `作业1代码链接 <../_static/图形学/LearnOpenGL/Camera_homework1.html>`_     
-    #. `作业2代码链接 <../_static/图形学/LearnOpenGL/Camera_homework2.html>`_
+    #. `Camera_homework1 <../_static/图形学/LearnOpenGL/Camera_homework1.html>`_     
+    #. `Camera_homework2 <../_static/图形学/LearnOpenGL/Camera_homework2.html>`_
 
 Review
 ***************************

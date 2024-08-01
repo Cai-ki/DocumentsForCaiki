@@ -88,6 +88,8 @@
 
     只需要简单的用 :math:`f[u][col] + help[u]` 就能求得该值。
 
+    总的时间复杂度为 :math:`O(nlog_2(n))` ，如果用线段树合并能减少一个 :math:`log` 。
+
     .. code-block:: CPP
 
         #include <bits/stdc++.h>

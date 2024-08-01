@@ -1,30 +1,22 @@
 知识速查
 ===================
 
-菜鸟教程
-************
-
-    `官方链接 <https://www.runoob.com/>`_
-
-NumPy
+`菜鸟教程 <https://www.runoob.com/>`_
 ******************************************
 
-    `官方链接 <https://numpy.org/doc/stable/user/whatisnumpy.html>`_
+`NumPy <https://numpy.org/doc/stable/user/whatisnumpy.html>`_
+*****************************************************************
 
-    `中文版链接 <https://numpy.org.cn/user/>`_
+`NumPy中文版 <https://numpy.org.cn/user/>`_
 
 
-10 minutes to pandas
-**********************
+`10 minutes to pandas <https://pandas.pydata.org/docs/user_guide/10min.html>`_
+******************************************************************************************
     
-    `官方链接 <https://pandas.pydata.org/docs/user_guide/10min.html>`_
+`10 minutes to pandas 中文版 <https://www.pypandas.cn/docs/getting_started/10min.html>`_
 
-    `中文版链接 <https://www.pypandas.cn/docs/getting_started/10min.html>`_
-
-matplotlib一图流
-*****************
-
-    `github链接 <https://github.com/matplotlib/cheatsheets>`_
+`matplotlib一图流 <https://github.com/matplotlib/cheatsheets>`_
+*********************************************************************
 
     .. raw:: html
 
