@@ -1,0 +1,62 @@
+.. index::三分
+
+三分
+======
+
+对于凹函数来说，如果 ``check(lmid) <= check(rmid)`` 意味着极值点一定在 ``rmid`` 左侧。
+
+因为此时 ``lmid`` 和 ``rmid`` 要么都在极值点右侧要么极值点再两者之间，不过无论如何，极值点都不可能在 ``rmid`` 右侧。
+
+因此就可以缩小区间。
+
+当然 ``lmid`` 同理，凸函数也同理。
+
+时间复杂度为 ``O(log(3n))`` 。
+
+.. code-block:: CPP
+    :caption: 凹函数
+
+    #include <bits/stdc++.h>
+
+    int main() {
+        int l = -1000, r = 1000;
+
+        auto check = [&](int u) -> int { return u * u + 1000; };
+
+        while (l < r) {
+            int lmid = l + (r - l) / 3, rmid = r - (r - l) / 3;
+            if (check(lmid) <= check(rmid))
+                r = rmid - 1;
+            else {
+                l = lmid + 1;
+            }
+        }
+
+        std::cout << l << ' ' << check(l) << '\n';
+
+        return 0;
+    }
+
+.. code-block:: CPP
+    :caption: 凸函数
+
+    #include <bits/stdc++.h>
+
+    int main() {
+        int l = -1000, r = 1000;
+
+        auto check = [&](int u) -> int { return -u * u + 1000; };
+
+        while (l < r) {
+            int lmid = l + (r - l) / 3, rmid = r - (r - l) / 3;
+            if (check(lmid) >= check(rmid))
+                r = rmid - 1;
+            else {
+                l = lmid + 1;
+            }
+        }
+
+        std::cout << l << ' ' << check(l) << '\n';
+
+        return 0;
+    }

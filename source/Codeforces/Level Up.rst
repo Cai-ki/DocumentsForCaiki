@@ -17,9 +17,14 @@
 
     整体思路大概就是这样，实在是不想细说下去，这场太唐了，没啥心情，大概了解思路意思意思就得了。
 
+    注意开 ``O3`` ，而且要选好 ``k`` 临界点的值，否则 ``T`` 麻你。
+
     .. code-block:: CPP
 
+        #pragma GCC optimize(3)
         #include <bits/stdc++.h>
+
+        using i64 = long long;
 
         int main() {
             std::ios::sync_with_stdio(false);
@@ -34,26 +39,26 @@
                 std::cin >> a[i];
             }
 
-            std::vector<std::vector<int>> cnt(n + 1, std::vector<int>(120, 0));
+            std::vector<std::vector<int>> cnt(n + 1, std::vector<int>(125, 0));
 
-            for (int i = 1; i < 120; i++) {
+            for (int i = 1; i < 125; i++) {
                 for (int j = 1; j <= n; j++) {
                     cnt[j][i] = cnt[j - 1][i] + (a[j] >= i);
                 }
             }
 
             std::vector<bool> ans(m);
-            std::vector<std::pair<int, int>> query[2001];
+            std::vector<std::pair<int, int>> query[2501];
 
             for (int i = 0; i < m; i++) {
                 int x, k;
                 std::cin >> x >> k;
-                if (k <= 2000) {
+                if (k <= 2500) {
                     query[k].push_back({x, i});
                 } else {
                     int l, r, L = 1;
 
-                    for (int g = 1; g < 120; g++) {
+                    for (int g = 1; g < 125; g++) {
                         l = L, r = n;
                         while (l < r) {
                             int mid = (l + r) >> 1;
@@ -77,7 +82,7 @@
                 }
             }
 
-            for (int i = 1; i <= 2000; i++) {
+            for (int i = 1; i <= 2500; i++) {
                 if (query[i].empty()) continue;
 
                 std::sort(query[i].begin(), query[i].end());

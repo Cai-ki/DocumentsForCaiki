@@ -51,6 +51,144 @@
             return 0;
         }
 
+`旅行 <https://acm.hdu.edu.cn/showproblem.php?pid=7458>`_
+***********************************************************
+
+    使用了启发式合并来优化树形 ``DP`` 。
+
+    这里我们需要设计两个 ``DP`` 数组。
+
+    :math:`f_{u,c}` 表示以 ``u`` 节点为根的子树假如祖先有类型为 ``c`` 的节点和它配对的话能提供的最大价值。
+
+    :math:`g_u` 表示以 ``u`` 节点为根的子树该配对的都配对好了的最大价值，也就是答案数组。
+
+    那么如何进行状态转移呢？
+
+    首先可以想到一个 :math:`O(n^2)` 的转移方式。
+
+    :math:`f_{u,v} \gets  \sum_{v \in son_u}^{} g_v + \max_{v\in son_u}(f_{v,c}-g_v)`
+
+    :math:`\begin{cases} g_u \gets \sum_{v \in son_u} g_v  \\ g_u \gets \max_{1\le c\le n} \max_{v_1,v_2\in son_u,v_1\ne v_2} (f_{v_1,c} - g_{v_1}) + (f_{v_2,c} - g_{v_2})  \end{cases}`
+        
+    不过在具体实现中会发现 ``f`` 数组不需要存那么多状态，对于节点 ``u`` 来说，最多有以 ``u`` 节点为根的子树的大小个类型，所以可以考虑用 ``map`` 维护。
+
+    在合并子树之间的情况时，可以使用启发式合并来优化。
+
+    这里再解释一下 ``help`` 数组。
+
+    这个数组的功能是用于辅助更改 ``f`` 数组的，有了它就更容易合并不同子树的 ``f`` 数组。
+
+    所以实际的 :math:`f_{u,c} - g_v = f[u][col] + help[u]` 。
+
+    具体合并时的 ``f[u][col] = (val + help[v]) - help[u];`` 就能使得之后 ``f[u][col] + help[u] = f[v][col] + help[v]`` 。
+
+    至于为什么这么做，这是因为在合并完后需要对所有的 :math:`f_u` 再更新，也就是都加上 :math:`\sum_{v \in son_u}^{} g_v` ，并减去 :math:`g_u` 。
+
+    从而便于之后回溯的时候对各个 :math:`f_{u,c} - g_u` ，开箱即用。
+
+    只需要简单的用 :math:`f[u][col] + help[u]` 就能求得该值。
+
+    .. code-block:: CPP
+
+        #include <bits/stdc++.h>
+
+        using i64 = long long;
+
+        constexpr int N = 2e5 + 1;
+
+        int n, c[N], w[N], e[N << 1], ne[N << 1], h[N], idx;
+
+        i64 g[N], help[N];
+        std::map<int, i64> f[N];
+
+        void add(int u, int v) { e[idx] = v, ne[idx] = h[u], h[u] = idx++; }
+
+        void dfs(int u, int fa) {
+            int sum = g[u] = help[u] = 0;
+            for (int i = h[u]; i != -1; i = ne[i]) {
+                int v = e[i];
+                if (v == fa) continue;
+                dfs(v, u);
+                sum += g[v];
+            }
+
+            g[u] = sum;
+
+            for (int i = h[u]; i != -1; i = ne[i]) {
+                int v = e[i];
+                if (v == fa) continue;
+                if (f[v].size() > f[u].size()) {
+                    std::swap(f[u], f[v]);
+                    std::swap(help[u], help[v]);
+                }
+
+                for (auto [col, val] : f[v]) {
+                    if (f[u].count(col)) {
+                        g[u] = std::max(
+                            g[u], sum + (f[u][col] + help[u]) + (f[v][col] + help[v]));
+                    }
+                    if (!f[u].count(col) || (f[u][col] + help[u]) < (val + help[v])) {
+                        f[u][col] = (val + help[v]) - help[u];
+                    }
+                }
+
+                f[v].clear();
+            }
+
+            if (f[u].count(c[u])) {
+                g[u] = std::max(g[u], sum + (f[u][c[u]] + help[u]) + w[u]);
+            }
+
+            if (!f[u].count(c[u]) || (f[u][c[u]] + help[u] < w[u])) {
+                f[u][c[u]] = w[u] - help[u];
+            }
+
+            help[u] += sum - g[u];
+        }
+
+        void solve() {
+            memset(h, -1, sizeof(h));
+            idx = 0;
+
+            std::cin >> n;
+
+            for (int i = 0; i < n; i++) {
+                std::cin >> c[i];
+            }
+
+            for (int i = 0; i < n; i++) {
+                std::cin >> w[i];
+            }
+
+            for (int i = 0; i < n - 1; i++) {
+                int u, v;
+                std::cin >> u >> v;
+                u--, v--;
+                add(u, v);
+                add(v, u);
+            }
+
+            dfs(0, -1);
+
+            std::cout << *std::max_element(g, g + n) << '\n';
+
+            f[0].clear();
+        }
+
+        int main() {
+            std::ios::sync_with_stdio(false);
+            std::cin.tie(nullptr);
+
+            int t;
+            std::cin >> t;
+
+            while (t--) {
+                solve();
+            }
+
+            return 0;
+        }
+
 `单峰数列 <https://acm.hdu.edu.cn/showproblem.php?pid=7463>`_
 ***************************************************************
 
@@ -186,6 +324,77 @@
                     std::cout << seg::query(op, l, r) << '\n';
                 }
             }
+
+            return 0;
+        }
+
+`抓拍 <https://acm.hdu.edu.cn/showproblem.php?pid=7467>`_
+************************************************************
+
+    满足凹函数性质，可以直接三分找答案。
+
+    PS：
+
+        代码还没测试， ``OJ`` 上这道题 ``403`` 不让交了。 
+
+
+    .. code-block:: CPP
+
+        #include <bits/stdc++.h>
+
+        using i64 = long long;
+
+        int main() {
+            std::ios::sync_with_stdio(false);
+            std::cin.tie(nullptr);
+
+            int n;
+            std::cin >> n;
+
+            std::vector<std::array<int, 4>> a(n);
+
+            for (auto &[x, y, dx, dy] : a) {
+                std::cin >> x >> y;
+
+                char c;
+                std::cin >> c;
+                dx = dy = 0;
+                if (c == 'E') {
+                    dx++;
+                } else if (c == 'W') {
+                    dx--;
+                } else if (c == 'N') {
+                    dy++;
+                } else {
+                    dy--;
+                }
+            }
+
+            i64 l = 0, r = 2e9;
+
+            auto check = [&](int u) -> i64 {
+                i64 minx = 1e9, miny = 1e9, maxx = -1e9, maxy = -1e9;
+                for (auto [x, y, dx, dy] : a) {
+                    i64 nx = x + u * dx, ny = y + u * dy;
+                    minx = std::min(minx, nx);
+                    miny = std::min(miny, ny);
+                    maxx = std::max(maxx, nx);
+                    maxy = std::max(maxy, ny);
+                }
+
+                return std::abs(maxx - minx) + std::abs(maxy - miny);
+            };
+
+            while (l < r) {
+                int lmid = l + (r - l) / 3, rmid = r - (r - l) / 3;
+                if (check(lmid) <= check(rmid))
+                    r = rmid - 1;
+                else {
+                    l = lmid + 1;
+                }
+            }
+
+            std::cout << 2LL * check(l) << '\n';
 
             return 0;
         }
