@@ -1,0 +1,265 @@
+.. index:: 模拟退火
+
+模拟退火
+===========
+
+    模拟退火是一种随机化算法。当一个问题的方案数量极大（甚至是无穷的）而且还是一个连续的非单峰函数时，我们可以使用模拟退火求解。
+
+    定义当前温度为 :math:`T` ，新状态 :math:`S^{'}` 与已知状态 :math:`S` （新状态由已知状态通过随机的方式得到，随机的范围由当前温度决定，随着温度降低，随机的范围将越来越小）之间的能量（值）差为 :math:`\Delta E(\Delta E\geqslant 0)` ，则发生状态转移（修改最优解）的概率为
+
+    .. math::
+
+        P(\bigtriangleup E)=\begin{cases} 1,S^{'}\ is\ better\ than\ S \\ e^{\frac{-\bigtriangleup E}{T}},otherwise \end{cases}
+
+    模拟退火时我们有三个参数：初始温度 :math:`T_0` ，降温系数 :math:`d` ，终止温度 :math:`T_k` 。其中 :math:`T_0` 是一个比较大的数， :math:`d` 是一个非常接近 :math:`1` 但是小于 :math:`1` 的数， :math:`T_k` 是一个接近 :math:`0` 的正数。
+
+    首先让温度 :math:`T=T_0` ，然后按照上述步骤进行一次转移尝试，再让 :math:`T=d\cdot T` 。当 :math:`T<T_k` 时模拟退火过程结束，当前最优解即为最终的最优解。
+
+    注意为了使得解更为精确，我们通常不直接取当前解作为答案，而是在退火过程中维护遇到的所有解的最优值。
+
+    .. image:: ../_static/算法与数据结构/模拟退火/simulated-annealing.gif
+        :alt: simulated-annealing
+        :align: center    
+
+    举个简单例子，我们来寻找函数 :math:`f(x) = \sin(5x) \cdot \cos(3x) + 0.1x - \exp(-0.5(x-5)^2)` 在 :math:`0\le x \le10` 的情况下的极小值点。
+
+    .. image:: ../_static/算法与数据结构/模拟退火/多峰函数.png
+        :alt: 多峰函数
+        :align: center    
+
+    .. code-block:: CPP
+
+        #include <bits/stdc++.h>
+
+        std::mt19937 Rand(time(NULL));
+        constexpr double T0 = 10., Tk = 1e-4, d = 0.9999;
+        std::pair<double, double> ans;
+
+        void limit(double& x) { x = std::max(0., std::min(10., x)); }
+
+        double rand(double l, double r) {
+            limit(l), limit(r);
+            return l + (r - l) * (double)Rand() / Rand.max();
+        }
+
+        double f(double x) {
+            double res = std::sin(5 * x) * std::cos(3 * x) + 0.1 * x -
+                        exp(-0.5 * (x - 5) * (x - 5));
+            if (res < ans.second) ans = {x, res};
+            return res;
+        };
+
+        void simulate_anneal() {
+            double x = rand(0, 10);
+
+            for (double t = T0; t > Tk; t *= d) {
+                double y = rand(x - t, x + t);
+                double dt = f(y) - f(x);
+                if (exp(-dt / t) > rand(0, 1)) {
+                    x = y;
+                }
+            }
+        }
+
+        int main() {
+            while ((double)clock() / CLOCKS_PER_SEC <= 0.8) {
+                simulate_anneal();
+            }
+
+            std::cout << ans.first << ' ' << ans.second << '\n';
+
+            return 0;
+        }
+
+    输出 ``5.30128 -1.38738`` 。
+
+    一些例题：
+
+    .. code-block:: CPP
+        :caption: `平衡点 / 吊打XXX <https://www.luogu.com.cn/problem/P1337>`_
+
+        #include <bits/stdc++.h>
+
+        typedef std::pair<double, double> PDD;
+
+        std::mt19937 Rand(time(NULL));
+        constexpr double T0 = 5e3, Tk = 1e-14, d = 0.9995;
+        int n;
+        std::vector<std::array<double, 3>> a;
+        PDD ans;
+        double E = 1e18;
+
+        void limit(double& x) { x = std::max(-T0, std::min(T0, x)); }
+
+        double rand(double l, double r) {
+            limit(l), limit(r);
+            return l + (r - l) * (double)Rand() / Rand.max();
+        }
+
+        double get_dist(PDD x, PDD y) {
+            return std::hypot(x.first - y.first, x.second - y.second);
+        }
+
+        double calc(PDD x) {
+            double e = 0;
+            for (auto [X, Y, W] : a) {
+                e += get_dist(x, {X, Y}) * W;
+            }
+            if (e < E) {
+                ans = x;
+                E = e;
+            }
+            return e;
+        }
+
+        void simulate_anneal() {
+            PDD x{0, 0};
+            for (int i = 0; i < n; i++) {
+                x.first += a[i][0];
+                x.second += a[i][1];
+            }
+            x.first /= n, x.second /= n;
+
+            for (double t = T0; t > Tk; t *= d) {
+                PDD y{rand(x.first - t, x.first + t), rand(x.second - t, x.second + t)};
+                double dt = calc(y) - calc(x);
+                if (exp(-dt / t) > rand(0, 1)) {
+                    x = y;
+                }
+            }
+        }
+
+        int main() {
+            std::ios::sync_with_stdio(false);
+            std::cin.tie(nullptr);
+
+            std::cin >> n;
+            a.resize(n);
+
+            for (int i = 0; i < n; i++) {
+                std::cin >> a[i][0] >> a[i][1] >> a[i][2];
+            }
+
+            while ((double)clock() / CLOCKS_PER_SEC <= 0.8) {
+                simulate_anneal();
+            }
+
+            std::cout << std::fixed << std::setprecision(3) << ans.first << ' '
+                    << ans.second << '\n';
+
+            return 0;
+        }
+
+    .. code-block:: CPP
+        :caption: `球形空间产生器 <https://www.luogu.com.cn/problem/P4035>`_
+
+        #include <bits/stdc++.h>
+
+        template <typename T>
+        struct Point {
+            std::vector<T> x;
+            int size;
+            Point() : size(0) {}
+            Point(int size) : x(size), size(size) {}
+            Point(std::vector<T> v) : x(v), size(v.size()) {}
+            T& operator[](int i) { return x[i]; }
+            const T& operator[](int i) const { return x[i]; }
+            Point operator-(Point y) {
+                for (int i = 0; i < size; i++) {
+                    y[i] = x[i] - y[i];
+                }
+                return y;
+            }
+            T norm2() {
+                T sum = 0;
+                for (int i = 0; i < size; i++) {
+                    sum += x[i] * x[i];
+                }
+                return sum;
+            }
+        };
+
+        typedef Point<double> PD;
+
+        std::mt19937 Rand(time(NULL));
+        int n;
+        std::vector<PD> points;
+        double S2 = 1e18;
+        PD ans;
+
+        void to_use(double& x) { x = std::max(-2e4, std::min(2e4, x)); }
+
+        double rand(double l, double r) {
+            to_use(l), to_use(r);
+            return l + (r - l) * (double)Rand() / Rand.max();
+        }
+
+        double calc(PD& x) {
+            double mean2 = 0;
+            std::vector<double> dist2(n + 1);
+
+            for (int i = 0; i < n + 1; i++) {
+                dist2[i] = (x - points[i]).norm2();
+                mean2 += dist2[i];
+            }
+            mean2 /= n + 1;
+
+            double s2 = 0;
+            for (int i = 0; i < n + 1; i++) {
+                double dif = dist2[i] - mean2;
+                s2 += dif * dif;
+            }
+
+            if (s2 < S2) {
+                S2 = s2;
+                ans = x;
+            }
+
+            return s2;
+        }
+
+        void simulate_anneal() {
+            PD x(n);
+            for (int i = 0; i < n; i++) {
+                x[i] = rand(-2e4, 2e4);
+            }
+
+            for (double t = 5e3; t > 1e-6; t *= 0.9999) {
+                PD y(n);
+                for (int i = 0; i < n; i++) {
+                    y[i] = rand(x[i] - t, x[i] + t);
+                }
+
+                double dt = calc(y) - calc(x);
+                if (exp(-dt / t) > rand(0, 1)) {
+                    x = y;
+                }
+            }
+        }
+
+        int main() {
+            std::ios::sync_with_stdio(false);
+            std::cin.tie(nullptr);
+
+            std::cin >> n;
+
+            for (int i = 0; i < n + 1; i++) {
+                PD point(n);
+                for (int j = 0; j < n; j++) {
+                    std::cin >> point[j];
+                }
+                points.push_back(point);
+            }
+
+            while ((double)clock() / CLOCKS_PER_SEC <= 0.8) {
+                simulate_anneal();
+            }
+
+            std::cout << std::fixed << std::setprecision(3);
+
+            for (int i = 0; i < n; i++) {
+                std::cout << ans[i] << ' ';
+            }
+
+            return 0;
+        }
