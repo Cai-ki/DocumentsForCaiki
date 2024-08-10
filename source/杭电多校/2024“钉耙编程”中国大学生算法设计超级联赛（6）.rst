@@ -1,0 +1,99 @@
+2024“钉耙编程”中国大学生算法设计超级联赛（6）
+===================================================
+
+`造花（简单版） <https://acm.hdu.edu.cn/showproblem.php?pid=7494>`_
+********************************************************************************
+
+    这个写法是我恰巧写对了，我原本是想用 ``map`` 维护子树的各种度的数量，和除子树以外的各种度的数量。
+
+    显然下方代码的 ``a`` 和 ``b`` 数组维护的其实是走过节点的各种度的数量，和没走过节点的各种度的数量。
+
+    不过由于题目的特殊性导致这样写没问题，因为若满足题目的菊花图，意味着该树除了菊花图的中心节点可能不是（还有要删去的点）以外，其它所有节点的度都为 ``1`` 。
+
+    这样导致我们维护的两个 ``map`` 确实能够包含所需的信息。
+
+    怎么说呢，其实不是很好解释，反正我的代码是正确的，我的思路是正确的，但代码的思路和原来的思路却是不一样的。
+
+    而且代码思路更绕一些吧。
+
+    那么我原本思路的正确写法应该是把这个 ``map`` 用启发式合并来维护，实现也不难，这里就不写了。
+
+    当然时间复杂度会多个 ``log`` 。
+
+    下方代码时间复杂度为 :math:`O(n)` 。
+
+    .. code-block:: CPP
+
+        #include <bits/stdc++.h>
+
+        void solve() {
+            int n;
+            std::cin >> n;
+
+            std::vector<int> d(n, 0);
+            std::vector<std::vector<int>> eg(n);
+
+            for (int i = 0; i < n - 1; i++) {
+                int u, v;
+                std::cin >> u >> v;
+                --u, --v;
+                d[u]++, d[v]++;
+                eg[u].push_back(v);
+                eg[v].push_back(u);
+            }
+
+            int root;
+            std::vector<int> size(n), a(n, 0), b(n, 0);
+            for (int i = 0; i < n; i++) {
+                if (d[i] == 1) {
+                    root = i;
+                }
+                a[d[i]]++;
+            }
+
+            bool found = false;
+
+            auto dfs = [&](auto &dfs, int u, int fa) -> void {
+                size[u] = 1;
+
+                int son;
+                for (auto it : eg[u]) {
+                    if (it == fa) continue;
+                    dfs(dfs, it, u);
+                    size[u] += size[it];
+                    son = it;
+                }
+
+                a[d[u]]--;
+                if (d[u] == 2 && fa != -1 &&
+                    ((b[size[u] - 2] - (d[son] == (size[u] - 2))) > 0 ||
+                    (d[son] - 1) == (size[u] - 2)) &&
+                    (a[n - size[u] - 1] - (d[fa] == (n - size[u] - 1)) > 0 ||
+                    ((d[fa] - 1) == (n - size[u] - 1)))) {
+                    found = true;
+                }
+                b[d[u]]++;
+            };
+
+            dfs(dfs, root, -1);
+
+            if (found) {
+                std::cout << "Yes\n";
+            } else {
+                std::cout << "No\n";
+            }
+        }
+
+        int main() {
+            std::ios::sync_with_stdio(false);
+            std::cin.tie(nullptr);
+
+            int t;
+            std::cin >> t;
+
+            while (t--) {
+                solve();
+            }
+
+            return 0;
+        }
