@@ -1,0 +1,147 @@
+.. index:: 素数筛法
+
+素数筛法
+============
+
+埃氏筛
+*******
+
+    从小到大考虑每个数，然后同时把当前这个数的所有（比自己大的）倍数记为合数，那么运行到某个数字时若该数字未被标记为合数那它必定是质数（因为除了自身和 ``1`` 以外它没有其它约数）。
+
+    .. code-block:: CPP
+
+        #include <bits/stdc++.h>
+
+        std::vector<int> is_prime, primes;
+
+        void sieve(int n) {
+            is_prime.assign(n + 1, true);
+            primes.clear();
+
+            is_prime[0] = is_prime[1] = false;
+            for (int i = 2; i <= n; i++) {
+                if (is_prime[i]) {
+                    primes.push_back(i);
+                    if ((long long)i * i > n) continue;
+                    for (int j = i * i; j <= n; j += i) {
+                        is_prime[j] = false;
+                    }
+                }
+            }
+        }
+
+        int main() {
+            sieve(50);
+
+            for (auto it : primes) {
+                std::cout << it << ' ';
+            }
+
+            return 0;
+        }
+
+    时间复杂度： :math:`O(n \log \log n)`
+
+欧拉筛
+*********
+
+    埃氏筛会将一个合数重复多次标记，这显然是一种浪费。
+
+    如若让每个合数都只被标记一次，那么时间复杂度就可以降到 :math:`O(n)` 。
+
+    欧拉筛使每个合数都只被其最小质因数筛去，从而保证每个合数都只被标记一次。
+
+    设 :math:`a = p * b` ， ``p`` 是 ``a`` 的最小质因数， ``b`` 是 ``a`` 的一个约数（ :math:`p \le b` ）。
+
+    从小到大考虑每个数，若当前数不是合数那么自然是质数。
+
+    之后从小到大枚举每个已经筛出的质数（相当于当前数是 ``b`` 我们要枚举质数 ``p`` 来筛 ``a``），此时必定满足 :math:`p \le b` 。
+
+    :math:`minp_a=p` ，存下 ``a`` 的最小质因数。
+
+    当 :math:`p>minp_b` 时意味着可以结束枚举过程了（此时 ``a`` 的最小质因数不再是 ``p``）。
+
+    .. code-block:: CPP
+
+        #include <bits/stdc++.h>
+
+        std::vector<int> minp, primes;
+
+        void sieve(int n) {
+            minp.assign(n + 1, 0);
+            primes.clear();
+
+            for (int i = 2; i <= n; i++) {
+                if (minp[i] == 0) {
+                    minp[i] = i;
+                    primes.push_back(i);
+                }
+
+                for (auto p : primes) {
+                    if ((long long)i * p > n || p > minp[i]) {
+                        break;
+                    }
+                    minp[i * p] = p;
+                }
+            }
+        }
+
+        int main() {
+            sieve(50);
+
+            for (auto it : primes) {
+                std::cout << it << ' ';
+            }
+
+            return 0;
+        }
+
+    时间复杂度： :math:`O(n)`
+
+`【模板】线性筛素数 <https://www.luogu.com.cn/problem/P3383>`_
+*********************************************************************
+
+    欧拉筛比埃氏筛要快一倍多。
+
+    .. code-block:: CPP
+
+        #include <bits/stdc++.h>
+
+        std::vector<int> minp, primes;
+
+        void sieve(int n) {
+            minp.assign(n + 1, 0);
+            primes.clear();
+
+            for (int i = 2; i <= n; i++) {
+                if (minp[i] == 0) {
+                    minp[i] = i;
+                    primes.push_back(i);
+                }
+
+                for (auto p : primes) {
+                    if ((long long)i * p > n || p > minp[i]) {
+                        break;
+                    }
+                    minp[i * p] = p;
+                }
+            }
+        }
+
+        int main() {
+            std::ios::sync_with_stdio(false);
+            std::cin.tie(nullptr);
+
+            int n, q;
+            std::cin >> n >> q;
+
+            sieve(n);
+
+            while (q--) {
+                int k;
+                std::cin >> k;
+                std::cout << primes[k - 1] << '\n';
+            }
+
+            return 0;
+        }
