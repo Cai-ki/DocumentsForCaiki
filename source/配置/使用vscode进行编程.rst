@@ -26,11 +26,12 @@ c/c++
             ├─.vscode
             │  └─settings.json
             ├─bin
-            ├─io
-            │  ├─in.txt
-            │  └─out.txt
-            └─code
-                └─main.cpp
+            ├─code
+            │  └─main.cpp
+            └─io
+               ├─in.txt
+               └─out.txt
+
 
     #. 配置文件
 

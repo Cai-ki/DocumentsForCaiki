@@ -1,0 +1,55 @@
+.. index:: 对拍
+
+对拍
+======
+
+    #. 目录结构
+        
+        ::
+
+            root
+            ├─.vscode
+            │  └─settings.json
+            ├─bin
+            ├─code
+            │  ├─random.cpp
+            │  ├─solve.cpp
+            │  ├─std.cpp
+            │  └─test.cpp
+            └─io
+               ├─diff.log
+               ├─in.txt
+               ├─out.txt
+               └─std_out.txt
+
+    #. test.cpp
+
+        .. code-block:: cpp
+
+            #include <bits/stdc++.h>
+
+            int main() {
+                int t = 10;
+
+                system("g++ random.cpp -o ..\\bin\\random");
+                system("g++ solve.cpp -o ..\\bin\\solve");
+                system("g++ std.cpp -o ..\\bin\\std");
+
+                std::cout << "Running tests...\n";
+
+                for (int i = 0; i < t; i++) {
+                    system("..\\bin\\random.exe > ..\\io\\in.txt");
+                    system("..\\bin\\solve.exe < ..\\io\\in.txt > ..\\io\\out.txt");
+                    system("..\\bin\\std.exe < ..\\io\\in.txt > ..\\io\\std_out.txt");
+                    if (system(
+                            "chcp 65001 > nul & fc ..\\io\\out.txt ..\\io\\std_out.txt  > "
+                            "..\\io\\diff.log")) {
+                        std::cout << "Test case " << i + 1 << " failed\n";
+                        break;
+                    }
+                    std::cout << "Test case " << i + 1 << " passed\n";
+                }
+
+                return 0;
+            }
+
