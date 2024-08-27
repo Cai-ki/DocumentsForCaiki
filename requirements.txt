@@ -1,1 +1,2 @@
 insipid-sphinx-theme
+pydata-sphinx-theme
