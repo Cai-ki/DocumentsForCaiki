@@ -53,3 +53,40 @@ CMake 生成器
         ::
 
             cmake -G "MinGW Makefiles" -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ -S <source_dir> -B <build_dir>
+
+
+Cmakelists
+**************
+
+    ::
+
+        include_dir = ...
+
+        link_dir = ...
+
+        exe_name = ...
+
+        cmake_minimum_required(VERSION 3.0)
+
+        project(myproject)
+
+        set(CMAKE_CXX_STANDARD 20)
+
+        include_directories(${include_dir})
+
+        link_directories(${link_dir})
+
+        file(GLOB_RECURSE src ${include_dir}/*.cpp)
+
+        # GLOB_RECURSE参数遍历指定目录及其所有子目录，GLOB参数仅遍历指定目录。
+        
+        # 如果不加参数就必须指出具体文件地址。
+
+        file(GLOB_RECURSE link ${link_dir}/*.a)
+
+        add_executable(${exe_name} WIN32 ${src})
+
+        # 添加WIN32参数以隐藏控制台
+
+        target_link_libraries(${exe_name} ${link})
+
