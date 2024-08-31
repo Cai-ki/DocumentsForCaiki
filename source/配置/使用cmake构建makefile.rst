@@ -86,9 +86,7 @@ Cmakelists
 
         file(GLOB_RECURSE link ${link_dir}/*.a)
 
-        add_executable(${exe_name} WIN32 ${src})
-
-        # 添加WIN32参数以隐藏控制台
+        add_executable(${exe_name} ${src})
 
         target_link_libraries(${exe_name} ${link})
 
