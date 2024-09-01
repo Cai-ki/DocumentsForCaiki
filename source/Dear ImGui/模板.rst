@@ -3,46 +3,23 @@
 
     .. code-block:: cpp
 
-        #include <stdio.h>
-        #include <windows.h>
-
         #include "GLFW/glfw3.h"
-
-        /*glfwGetWin32Window*/
-        #define GLFW_EXPOSE_NATIVE_WIN32
-        #include "glfw3native.h"
-        /*glfwGetWin32Window*/
-
         #include "imgui.h"
         #include "imgui_impl_glfw.h"
         #include "imgui_impl_opengl3.h"
 
-        static void glfw_error_callback(int error, const char* description) {
-            fprintf(stderr, "GLFW Error %d: %s\n", error, description);
-        }
-
-        void SetWindowTransparency(GLFWwindow* window, BYTE alpha) {
-            HWND hwnd = glfwGetWin32Window(window);
-            LONG style = GetWindowLong(hwnd, GWL_EXSTYLE);
-            SetWindowLong(hwnd, GWL_EXSTYLE, style | WS_EX_LAYERED);
-            SetLayeredWindowAttributes(hwnd, 0, alpha, LWA_ALPHA);
-        }
-
         int main() {
-        #pragma region glfw init
-            glfwSetErrorCallback(glfw_error_callback);
-            if (!glfwInit()) return 1;
-            const char* glsl_version = "#version 330";
+        #pragma region Glfw init
+            glfwInit();
             glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
             glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-            GLFWwindow* window = glfwCreateWindow(1920, 1200, "Gui", nullptr, nullptr);
-            if (window == nullptr) return 1;
+            GLFWwindow* window =
+                glfwCreateWindow(1920, 1200, "Imgui", nullptr, nullptr);
             glfwMakeContextCurrent(window);
             glfwSwapInterval(1);
-            SetWindowTransparency(window, 200);
         #pragma endregion
 
-        #pragma region imgui init
+        #pragma region Imgui init
             IMGUI_CHECKVERSION();
             ImGui::CreateContext();
             ImGuiIO& io = ImGui::GetIO();
@@ -51,94 +28,67 @@
             io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
             io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 
+            io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+            io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+
+            io.ConfigFlags |= ImGuiViewportFlags_NoDecoration;
+
             io.Fonts->Clear();
-            io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\msyh.ttc", 36.0f, NULL,
+            io.Fonts->AddFontFromFileTTF("c:/Windows/Fonts/msyh.ttc", 36.0f, NULL,
                                         io.Fonts->GetGlyphRangesChineseFull());
+
 
             ImGui::StyleColorsDark();
         #pragma endregion
 
-        #pragma region setup backends
+        #pragma region Setup backends
             ImGui_ImplGlfw_InitForOpenGL(window, true);
-            ImGui_ImplOpenGL3_Init(glsl_version);
+            ImGui_ImplOpenGL3_Init("#version 330");
         #pragma endregion
 
-        #pragma region main loop
+        #pragma region Main loop
             while (!glfwWindowShouldClose(window)) {
-                /*process all pending events*/
-                glfwPollEvents();
-                /*process all pending events*/
-
-                /*start new frame*/
+                /*Start new frame*/
                 ImGui_ImplOpenGL3_NewFrame();
                 ImGui_ImplGlfw_NewFrame();
                 ImGui::NewFrame();
-                /*start new frame*/
+                /*Start new frame*/
 
-        #pragma region render ui
-                static bool show_demo_window = true;
-                static bool show_another_window = false;
-                static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
-                if (show_demo_window) ImGui::ShowDemoWindow(&show_demo_window);
-
-                {
-                    static float f = 0.0f;
-                    static int counter = 0;
-                    static char text[256 * 256] = "Initial text";
-                    ImGui::Begin("测试");
-
-                    ImGui::InputTextMultiline(
-                        "Text Box", text, IM_ARRAYSIZE(text),
-                        ImVec2(-1.0f, ImGui::GetTextLineHeight() * 8));
-
-                    ImGui::Text("Current text: %s", text);
-
-                    ImGui::Text("This is some useful text.");
-                    ImGui::Checkbox("Demo Window", &show_demo_window);
-                    ImGui::Checkbox("Another Window", &show_another_window);
-
-                    ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
-                    ImGui::ColorEdit3("clear color", (float*)&clear_color);
-
-                    if (ImGui::Button("Button")) counter++;
-                    ImGui::SameLine();
-                    ImGui::Text("counter = %d", counter);
-
-                    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
-                                1000.0f / io.Framerate, io.Framerate);
-                    ImGui::End();
-                }
-
-                if (show_another_window) {
-                    ImGui::Begin("Another Window", &show_another_window);
-                    ImGui::Text("Hello from another window!");
-                    if (ImGui::Button("Close Me")) show_another_window = false;
-                    ImGui::End();
-                }
-        #pragma endregion
-
-                /*rendering*/
-                ImGui::Render();
-
-                {
-                    int display_w, display_h;
-                    glfwGetFramebufferSize(window, &display_w, &display_h);
-                    glViewport(0, 0, display_w, display_h);
-                    glClearColor(clear_color.x * clear_color.w,
-                                clear_color.y * clear_color.w,
-                                clear_color.z * clear_color.w, clear_color.w);
-                }
-
+                /*Frame init*/
                 glClear(GL_COLOR_BUFFER_BIT);
-                ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+                ImGui::DockSpaceOverViewport();
+                /*Frame init*/
 
+                /*Draw GUI*/
+                ImGui::ShowDemoWindow();
+                ImGui::Begin("Demo");
+                ImGui::Text("hello world!");
+                ImGui::Text("你好世界！");
+                ImGui::End();
+                /*Draw GUI*/
+
+                /*Draw*/
+                ImGui::Render();
+                ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+                /*Draw*/
+
+                /*Enable viewports*/
+                if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+                    GLFWwindow* backup_current_context = glfwGetCurrentContext();
+                    ImGui::UpdatePlatformWindows();
+                    ImGui::RenderPlatformWindowsDefault();
+                    glfwMakeContextCurrent(backup_current_context);
+                }
+                /*Enable viewports*/
+
+                /*End of each round*/
+                glfwPollEvents();
                 glfwSwapBuffers(window);
-                /*rendering*/
+                /*End of each round*/
             }
         #pragma endregion
 
-        #pragma region cleanup
+        #pragma region Cleanup
             ImGui_ImplOpenGL3_Shutdown();
             ImGui_ImplGlfw_Shutdown();
             ImGui::DestroyContext();
@@ -146,6 +96,5 @@
             glfwDestroyWindow(window);
             glfwTerminate();
         #pragma endregion
-
             return 0;
         }
