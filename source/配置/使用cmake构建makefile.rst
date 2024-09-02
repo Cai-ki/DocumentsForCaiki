@@ -59,6 +59,7 @@ CMake 生成器
         使用 ``clangd`` 时：
 
         ::
+            
             cmake -G "MinGW Makefiles" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ...
 
 Cmakelists
