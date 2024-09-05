@@ -1,0 +1,156 @@
+模板
+======
+
+    .. code-block:: cpp
+        :caption: main.cpp
+
+        #include "GLFW/glfw3.h"
+        #include "gui.h"
+        #include "helper.h"
+        #include "imgui.h"
+
+        int main() {
+            GLFWwindow* window = helpGlfwCreateWindow(1920, 1200, "Imgui", 1);
+
+            helpImguiInit();
+
+            ImGuiIO& io = ImGui::GetIO();
+
+            io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+            io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+
+            io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+            io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+
+            io.ConfigFlags |= ImGuiViewportFlags_NoDecoration;
+
+            io.Fonts->AddFontFromFileTTF("c:/Windows/Fonts/msyh.ttc", 36.0f, NULL,
+                                        io.Fonts->GetGlyphRangesChineseFull());
+
+            ImGui::StyleColorsDark();
+
+            helpSetupBackends(window, "#version 330");
+
+            while (!glfwWindowShouldClose(window)) {
+                helpFrameStart();
+
+                ImGui::DockSpaceOverViewport();
+
+                drawGui();
+
+                ImGui::Render();
+
+                helpViewportsEnable();
+
+                helpFrameEnd(window);
+            }
+
+            helpCleanup(window);
+
+            return 0;
+        }
+
+    .. code-block:: cpp
+        :caption: helper.h
+
+        #pragma once
+
+        #include "GLFW/glfw3.h"
+
+        GLFWwindow* helpGlfwCreateWindow(int width, int height, const char* title,
+                                        int interval);
+        void helpImguiInit();
+        void helpSetupBackends(GLFWwindow* window, const char* glsl_version);
+        void helpCleanup(GLFWwindow* window);
+        void helpFrameStart();
+        void helpFrameEnd(GLFWwindow* window);
+        void helpViewportsEnable();
+
+    .. code-block:: cpp
+        :caption: helper.cpp
+
+        #include "helper.h"
+
+        #include "imgui.h"
+        #include "imgui_impl_glfw.h"
+        #include "imgui_impl_opengl3.h"
+
+        GLFWwindow* helpGlfwCreateWindow(int width, int height, const char* title,
+                                        int interval) {
+            glfwInit();
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+            GLFWwindow* window =
+                glfwCreateWindow(width, height, title, nullptr, nullptr);
+            glfwMakeContextCurrent(window);
+            glfwSwapInterval(interval);
+            return window;
+        }
+
+        void helpImguiInit() {
+            IMGUI_CHECKVERSION();
+            ImGui::CreateContext();
+            ImGuiIO& io = ImGui::GetIO();
+            (void)io;
+        }
+
+        void helpSetupBackends(GLFWwindow* window, const char* glsl_version) {
+            ImGui_ImplGlfw_InitForOpenGL(window, true);
+            ImGui_ImplOpenGL3_Init(glsl_version);
+        };
+
+        void helpCleanup(GLFWwindow* window) {
+            ImGui_ImplOpenGL3_Shutdown();
+            ImGui_ImplGlfw_Shutdown();
+            ImGui::DestroyContext();
+
+            glfwDestroyWindow(window);
+            glfwTerminate();
+        }
+
+        void helpFrameStart() {
+            glClear(GL_COLOR_BUFFER_BIT);
+            ImGui_ImplOpenGL3_NewFrame();
+            ImGui_ImplGlfw_NewFrame();
+            ImGui::NewFrame();
+        }
+
+        void helpFrameEnd(GLFWwindow* window) {
+            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+            glfwPollEvents();
+            glfwSwapBuffers(window);
+        }
+
+        void helpViewportsEnable() {
+            if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+                GLFWwindow* backup_current_context = glfwGetCurrentContext();
+                ImGui::UpdatePlatformWindows();
+                ImGui::RenderPlatformWindowsDefault();
+                glfwMakeContextCurrent(backup_current_context);
+            }
+        }
+
+    .. code-block:: cpp
+        :caption: gui.h
+
+        #pragma once
+
+        void drawGui();
+
+    .. code-block:: cpp
+        :caption: gui.h
+
+        #include "gui.h"
+
+        #include "imgui.h"
+
+        void drawGui() {
+            ImGui::Begin("Demo");
+            ImGui::Text("hello world!\n");
+            ImGui::Text("你好世界！\n");
+            ImGui::End();
+        }
+
+    .. image:: ../_static/ImGui/模板.png
+        :alt: 模板
+        :align: center
