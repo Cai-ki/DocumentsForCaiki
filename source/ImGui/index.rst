@@ -1,6 +1,6 @@
-.. index:: Dear ImGui
+.. index:: ImGui
 
-Dear ImGui
+ImGui
 =================================
    .. toctree::
       :maxdepth: 1
