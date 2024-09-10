@@ -44,14 +44,14 @@
 创建 ``python`` 环境
 **********************
 
-    打开终端，输入 ``conda create -n env_name python=3.12`` （记得按提示输入 ``y`` ），这里的 ``env_name`` 是你的环境名称吗， ``3.12`` 是你的 ``python`` 版本号，请根据个人需求自行更改。
+    打开终端，输入 ``conda create -n env_name python=3.12`` （记得按提示输入 ``y`` ），这里的 ``env_name`` 是你的环境名称， ``3.12`` 是你的 ``python`` 版本号，请根据个人需求自行更改。
 
     接下来输入 ``conda activate env_name`` ，这时候你的终端最新一行前会出现 ``(env_name)`` ，代表已激活环境。
 
 安装 ``pytorch``
 **********************
 
-    在终端中输入 ``conda install pytorch`` ，一路 ``y`` 后，敬请等待。
+    激活环境后，在终端中输入 ``conda install pytorch`` ，一路 ``y`` 后，敬请等待。
 
     下载完成后输入 ``conda list`` 可以看到 ``torch`` 已安装完毕。
 
