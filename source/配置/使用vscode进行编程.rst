@@ -51,10 +51,10 @@ c/c++
             "code-runner.saveAllFilesBeforeRun": true, // 运行前自动保存所有文件
             "code-runner.runInTerminal": true, // 在terminal中运行
             "code-runner.executorMap": {
-                "c": "cd $dir && gcc $fileName -o ../bin/$fileNameWithoutExt && ../bin/$dir$fileNameWithoutExt",
-                "cpp": "cd $dir && g++ -std=c++20 $fileName -o ../bin/$fileNameWithoutExt && ../bin/$fileNameWithoutExt",
-                // "cpp": "cd $dir && g++ -std=c++20 $fileName -o ../bin/$fileNameWithoutExt && Get-Content '../io/in.txt' | ../bin/$fileNameWithoutExt | Out-File -FilePath '../io/out.txt' -Encoding utf8",
-                "python": "cd $dir && set PYTHONIOENCODING=utf8 ;python -u $fullFileName",
+                "c": "cd $dir && chcp 65001>nul && gcc $fileName -o ../bin/$fileNameWithoutExt && ../bin/$dir$fileNameWithoutExt",
+                "cpp": "cd $dir && chcp 65001>nul && g++ -std=c++20 $fileName -o ../bin/$fileNameWithoutExt && ../bin/$fileNameWithoutExt",
+                // "cpp": "cd $dir && chcp 65001>nul && g++ -std=c++20 $fileName -o ../bin/$fileNameWithoutExt && Get-Content '../io/in.txt' | ../bin/$fileNameWithoutExt | Out-File -FilePath '../io/out.txt' -Encoding utf8",
+                "python": "cd $dir && chcp 65001>nul && set PYTHONIOENCODING=utf8 ;python -u $fullFileName",
             }, // 用于指定如何运行不同语言的代码
             "code-runner.executorMapByFileExtension": {}, // 用于指定如何运行特定文件扩展名的代码
             "clangd.path": "C:/msys64/mingw32/bin/clangd.exe", // clangd路径
