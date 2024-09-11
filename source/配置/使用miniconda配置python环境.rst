@@ -58,3 +58,19 @@
     ps：下载像 ``pytorch`` 这样大型库建议使用 ``conda install`` ，其它情况则建议用 ``pip install``。而且请注意不要经常混用 ``conda install`` 和 ``pip install`` 。
     
 
+安装 ``GPU`` 版本 ``pytorch``
+********************************
+
+    我们需要先访问 `pytorch 官网 <https://pytorch.org/get-started/locally/>`_ 。
+
+    通过官方网站然后按照个人需求构建配置命令。
+
+    在此之前我们需要在终端中输入 ``nvidia-smi`` 找到本机 ``CUDA`` 版本。
+
+    例如我的 ``CUDA`` 版本为 ``12.3`` ，这里建议选择最接近的 ``CUDA`` 版本。
+
+    所以我的配置命令为 ``conda install pytorch torchvision torchaudio pytorch-cuda=12.4 -c pytorch -c nvidia`` 。
+
+    之后等待下载完成即可（建议挂 ``VPN`` ，国内下载有点慢）。
+
+    下载完成后，如果嫌缓存占内存太大可以使用 ``conda clean --all`` 清除下载缓存。
