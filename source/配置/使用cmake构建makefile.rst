@@ -65,6 +65,8 @@ CMake 生成器
 Cmakelists
 **************
 
+    导出可执行程序：
+
     ::
 
         include_dir = ...
@@ -96,4 +98,67 @@ Cmakelists
         add_executable(${exe_name} ${src})
 
         target_link_libraries(${exe_name} ${link})
+
+    导出 ``DLL`` ：
+
+    ::
+
+        cmake_minimum_required(VERSION 3.0)
+
+        # 项目名称
+        project(myproject)
+
+        # 设置 C++ 标准
+        set(CMAKE_CXX_STANDARD 20)
+
+        # 设置静态链接器标志
+        set(CMAKE_SHARED_LINKER_FLAGS "-static-libgcc -static-libstdc++")
+
+        # 变量定义
+        set(include_dir "path/to/include")
+        set(link_dir "path/to/libs")
+        set(library_name "mylibrary")
+
+        # 包含目录
+        include_directories(${include_dir})
+
+        # 链接目录
+        link_directories(${link_dir})
+
+        # 查找所有源文件（.cpp 文件）并将它们添加到 SRC 变量
+        file(GLOB_RECURSE src_files ${include_dir}/*.cpp)
+
+        # 查找所有链接库（.a 文件），并将它们添加到 LIBS 变量
+        file(GLOB_RECURSE lib_files ${link_dir}/*.a)
+
+        # 添加动态链接库目标
+        add_library(${library_name} SHARED ${src_files})
+
+        # 设置导出 DLL 时的目标属性
+        set_target_properties(${library_name} PROPERTIES
+            OUTPUT_NAME "mydynamiclib"  # 生成的 DLL 文件名将是 mydynamiclib.dll
+        )
+
+        # 链接外部库
+        target_link_libraries(${library_name} ${lib_files})
+
+make调用cmake
+*****************
+
+    ::
+
+        source_dir = .
+
+        build_dir = ${source_dir}\build
+
+        DCMAKE_RC_COMPILER = C:/msys64/mingw64/bin/x86_64-w64-mingw32-windres
+
+        DCMAKE_C_COMPILER = x86_64-w64-mingw32-gcc
+
+        DCMAKE_CXX_COMPILER = x86_64-w64-mingw32-g++
+
+
+        all:
+            cmake -G "MinGW Makefiles" -DCMAKE_RC_COMPILER=${DCMAKE_RC_COMPILER} -DCMAKE_C_COMPILER=${DCMAKE_C_COMPILER} -DCMAKE_CXX_COMPILER=${DCMAKE_CXX_COMPILER} -S ${source_dir} -B ${build_dir}
+            cd ${build_dir} & make
 
