@@ -20,4 +20,4 @@
 
     .. raw:: html
 
-        <a href="../_static/数据分析和可视化/cheatsheets.pdf">Download PDF</a>
+        <a href="../../_static/数据分析和可视化/cheatsheets.pdf">Download PDF</a>

@@ -65,9 +65,8 @@ CMake 生成器
 Cmakelists
 **************
 
-    导出可执行程序：
-
-    ::
+    .. code-block:: cmake
+        :caption: 导出可执行程序
 
         include_dir = ...
 
@@ -99,9 +98,8 @@ Cmakelists
 
         target_link_libraries(${exe_name} ${link})
 
-    导出 ``DLL`` ：
-
-    ::
+    .. code-block:: cmake
+        :caption: 导出 ``DLL``
 
         cmake_minimum_required(VERSION 3.0)
 
@@ -145,7 +143,7 @@ Cmakelists
 make调用cmake
 *****************
 
-    ::
+    .. code-block:: make
 
         source_dir = .
 
