@@ -124,3 +124,8 @@
 至此，我们通过 ``Python`` 的 ``ctypes`` 库调用成功 ``CPP`` 的 ``dll`` 。
 
 当我们既需要 ``Python`` 的便捷性但还有部分高性能需求时，不妨把高性能模块抽离出来通过 ``CPP`` 来代替。
+
+编译 ``imgui`` 项目为 ``dll``
+*********************************
+
+    `libimgui <https://github.com/MiliLong/my-try/tree/main/libimgui>`_
