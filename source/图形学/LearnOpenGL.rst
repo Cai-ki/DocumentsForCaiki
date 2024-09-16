@@ -3,7 +3,7 @@ LearnOpenGL
 
     欢迎来到图形学！！！
 
-    接下来我开始跟着`LearnOpenGL`教程正式入坑图形学啦~
+    接下来我开始跟着 ``LearnOpenGL`` 教程正式入坑图形学啦~
 
     `LearnOpenGL 中文 <https://learnopengl-cn.github.io/>`_
 
