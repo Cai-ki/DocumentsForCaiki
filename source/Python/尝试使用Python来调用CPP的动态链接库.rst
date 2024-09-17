@@ -128,4 +128,4 @@
 编译 ``imgui`` 项目为 ``dll``
 *********************************
 
-    `libimgui <https://github.com/MiliLong/my-try/tree/main/libimgui>`_
+    `try_ctypes <https://github.com/MiliLong/my-try/tree/main/try_ctypes>`_
