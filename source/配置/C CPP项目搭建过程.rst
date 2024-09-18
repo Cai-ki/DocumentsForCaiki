@@ -90,6 +90,8 @@ C/CPP项目搭建过程
 
         `my-try <https://github.com/MiliLong/my-try>`_。
 
+        `template <https://github.com/MiliLong/my-try/tree/main/template>`_
+
 ``Makefile`` 模板
 --------------------
 
