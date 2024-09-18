@@ -129,3 +129,8 @@
 *********************************
 
     `try_ctypes <https://github.com/MiliLong/my-try/tree/main/try_ctypes>`_
+
+借助 ``pybind11`` 将代码导出为 ``module``
+*******************************************
+
+    `try_pybind11 <https://github.com/MiliLong/my-try/tree/main/try_pybind11>`_
