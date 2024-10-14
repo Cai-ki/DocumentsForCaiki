@@ -1,4 +1,4 @@
-`Cards Partition <https://codeforces.com/contest/2019/problem/C>`
+`Cards Partition <https://codeforces.com/contest/2019/problem/C>`_
 =======================================================================
 
     ``n`` 的范围不大。可以考虑暴力从大到小枚举答案，判断是否合法。

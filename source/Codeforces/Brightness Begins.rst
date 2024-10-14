@@ -1,4 +1,4 @@
-`Brightness Begins <https://codeforces.com/contest/2020/problem/B>`
+`Brightness Begins <https://codeforces.com/contest/2020/problem/B>`_
 ===========================================================================
 
     发现任意位置的灯的亮灭是固定的，不会随着 ``n`` 的改变而改变（假如该位置存在的话）。

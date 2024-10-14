@@ -1,4 +1,4 @@
-`Link Summon <https://codeforces.com/gym/105222/problem/B>`
+`Link Summon <https://codeforces.com/gym/105222/problem/B>`_
 ==============================================================
 
     贪心 ``+`` 分类讨论。

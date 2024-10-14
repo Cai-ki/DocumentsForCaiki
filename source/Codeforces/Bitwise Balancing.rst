@@ -1,4 +1,4 @@
-`Bitwise Balancing <https://codeforces.com/contest/2020/problem/C>`
+`Bitwise Balancing <https://codeforces.com/contest/2020/problem/C>`_
 ===========================================================================
 
     对于任何二进制位都模拟即可。

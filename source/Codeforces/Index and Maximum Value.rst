@@ -1,4 +1,4 @@
-`Index and Maximum Value <https://codeforces.com/contest/2007/problem/B>`
+`Index and Maximum Value <https://codeforces.com/contest/2007/problem/B>`_
 ===============================================================================
 
     由于是对于具有给定大小的值的位置进行操作，我们可以发现，最初的最大值的位置，也是最后最大值的位置。
