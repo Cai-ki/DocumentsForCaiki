@@ -11,7 +11,7 @@
 
     我们只需要寻找是否有某个牌堆数量恰好整除牌数即可。
 
-    .. code-block::CPP
+    .. code-block:: CPP
 
         #ifndef CAIKI_LOCAL
         #include <bits/stdc++.h>

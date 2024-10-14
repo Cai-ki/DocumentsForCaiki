@@ -5,7 +5,7 @@
 
     分类讨论。
 
-    .. code-block::CPP
+    .. code-block:: CPP
     
         #ifndef CAIKI_LOCAL
         #include <bits/stdc++.h>

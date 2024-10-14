@@ -5,7 +5,7 @@
 
     尽可能先让两两结合，之后三三， ``etc`` 。 
 
-    .. code-block::CPP
+    .. code-block:: CPP
 
         #ifndef CAIKI_LOCAL
         #include <bits/stdc++.h>

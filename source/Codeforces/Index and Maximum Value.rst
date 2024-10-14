@@ -5,7 +5,7 @@
 
     找到最初的位置，模拟操作就行。
 
-    .. code-block::CPP
+    .. code-block:: CPP
 
         #ifndef CAIKI_LOCAL
         #include <bits/stdc++.h>
