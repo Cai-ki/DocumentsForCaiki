@@ -6,44 +6,40 @@ Fenwick —— 树状数组
         template <typename T>
         struct Fenwick {
             int n;
-            std::vector<T> a;
-            
-            Fenwick(int n_ = 0) {
-                init(n_);
-            }
-            
-            void init(int n_) {
-                n = n_;
-                a.assign(n, T{});
-            }
-            
-            void add(int x, const T &v) {
-                for (int i = x + 1; i <= n; i += i & -i) {
-                    a[i - 1] = a[i - 1] + v;
+            std::vector<T> tr;
+            Fenwick(int n) : n(n), tr(n + 1) {}
+
+            int lowbit(int x) { return x & -x; }
+
+            void add(int i, T val) {
+                for (; i <= n; i += lowbit(i)) {
+                    tr[i] += val;
                 }
             }
-            
-            T sum(int x) {
-                T ans{};
-                for (int i = x; i > 0; i -= i & -i) {
-                    ans = ans + a[i - 1];
+
+            T sum(T i) {
+                T res = 0;
+                for (; i > 0; i -= lowbit(i)) {
+                    res += tr[i];
                 }
-                return ans;
+                return res;
             }
-            
+
             T rangeSum(int l, int r) {
-                return sum(r) - sum(l);
+                if (l > r) return 0;
+                return sum(r) - sum(l - 1);
             }
-            
-            int select(const T &k) {
+
+            T kth(int k) {
                 int x = 0;
-                T cur{};
+                T res = 0;
                 for (int i = 1 << std::__lg(n); i; i /= 2) {
-                    if (x + i <= n && cur + a[x + i - 1] <= k) {
+                    if (x + i <= n && k >= tr[x + i]) {
                         x += i;
-                        cur = cur + a[x - 1];
+                        k -= tr[x];
+                        res += tr[x];
                     }
                 }
-                return x;
+                return (k ? -1 : res);
             }
         };
