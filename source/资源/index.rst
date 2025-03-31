@@ -26,7 +26,6 @@
 软件
 --------
 
-    .. #. `v2rayN <https://github.com/2dust/v2rayN/releases>`_ 
-
+    #. `v2rayN <https://github.com/2dust/v2rayN/releases>`_ 
     #. `DBeaver（数据库ssh工具） <https://dbeaver.io/download/>`_
     #. `Tabby Terminal（terminal ssh工具） <https://tabby.sh/>`_
