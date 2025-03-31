@@ -3,6 +3,9 @@
 资源
 ============
 
+网站
+------------
+
     #. `Docker 备忘清单 <https://wangchujiang.com/reference/docs/docker.html>`_
     #. `Linux 命令搜索 <https://wangchujiang.com/linux-command/>`_
     #. `c4 - C in four functions <https://github.com/rswier/c4>`_
@@ -18,5 +21,12 @@
     #. `Gamepad Tester - Check Controllers and Joysticks Online <https://hardwaretester.com/gamepad>`_
     #. `常用 Git 命令清单 <https://www.ruanyifeng.com/blog/2015/12/git-cheat-sheet.html>`_
     
-    .. #. `v2rayN <https://github.com/2dust/v2rayN/releases>`_ 
     .. #. `SFCloud <https://www.sfcloud.dev/#/>`_
+
+软件
+--------
+
+    .. #. `v2rayN <https://github.com/2dust/v2rayN/releases>`_ 
+
+    #. `DBeaver（数据库ssh工具） <https://dbeaver.io/download/>`_
+    #. `Tabby Terminal（terminal ssh工具） <https://tabby.sh/>`_
